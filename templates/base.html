@@ -1,0 +1,15 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="CoreFlow brings inventory, purchasing, sales, warehouse, and reports together in one platform.">
+    <title>{% block title %}CoreFlow Platform{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}?v={{ asset_version }}">
+    <script src="{% static 'js/app.js' %}?v={{ asset_version }}" defer></script>
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    {% block content %}{% endblock %}
+  </body>
+</html>

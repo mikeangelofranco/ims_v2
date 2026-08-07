@@ -1,0 +1,58 @@
+<section class="dashboard-shell" aria-label="CoreFlow dashboard preview">
+  <header class="dashboard-header">
+    <div class="dashboard-brand">
+      <span class="brand-logo__mark" aria-hidden="true"></span>
+      <strong class="dashboard-coreflow">CoreFlow</strong>
+      <strong class="dashboard-mobile-title">Your business at a glance</strong>
+    </div>
+    <div class="dashboard-controls">
+      <button type="button">This <span class="desktop-period">Month</span><i data-lucide="chevron-down" aria-hidden="true"></i></button>
+      <button class="dashboard-more" type="button" aria-label="More dashboard options"><i data-lucide="ellipsis" aria-hidden="true"></i></button>
+    </div>
+  </header>
+  <div class="dashboard-body">
+    <div class="metric-grid">
+      <article class="metric-card metric-inventory">
+        <div class="metric-top"><span>Inventory Value</span><span class="metric-icon metric-icon--primary"><i data-lucide="box" aria-hidden="true"></i></span></div>
+        <strong><span class="desktop-value">₱2,450,000</span><span class="mobile-value">₱2.45M</span></strong>
+        <small class="metric-up">↑ 12.5% <em>vs last month</em></small>
+      </article>
+      <article class="metric-card metric-low-stock">
+        <div class="metric-top"><span>Low Stock Items</span><span class="metric-icon metric-icon--warning"><i data-lucide="triangle-alert" aria-hidden="true"></i></span></div>
+        <strong>24</strong>
+        <small class="metric-down">↓ -4 <em>vs last month</em></small>
+      </article>
+      <article class="metric-card metric-orders">
+        <div class="metric-top"><span>Orders Today</span><span class="metric-icon metric-icon--success"><i data-lucide="shopping-cart" aria-hidden="true"></i></span></div>
+        <strong>18</strong>
+        <small class="metric-up">↑ 15.3% <em>vs last month</em></small>
+      </article>
+      <article class="metric-card metric-sales">
+        <div class="metric-top"><span>Sales (This Month)</span><span class="metric-icon metric-icon--purple"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i></span></div>
+        <strong><span class="desktop-value">₱860,000</span><span class="mobile-value">₱860K</span></strong>
+        <small class="metric-up">↑ 15.3% <em>vs last month</em></small>
+      </article>
+    </div>
+    <div class="dashboard-lower">
+      <article class="trend-card">
+        <header><strong>Inventory Trend</strong><button type="button">This Year <i data-lucide="chevron-down" aria-hidden="true"></i></button></header>
+        <div class="chart-wrap">
+          <div class="chart-y-axis"><span>₱3M</span><span>₱2M</span><span>₱1M</span><span>₱0</span></div>
+          <div class="chart-canvas-wrap"><canvas data-inventory-chart aria-label="Inventory trend from January through July"></canvas><div class="chart-months"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div></div>
+        </div>
+      </article>
+      <article class="products-card">
+        <h2>Recent Products</h2>
+        <div class="products-head"><span>Product</span><span>Stock</span></div>
+        <ul>
+          <li><span><b>💻</b>Laptop</span><small>125 pcs</small></li>
+          <li><span><b>🖱️</b>Wireless Mouse</span><small>340 pcs</small></li>
+          <li><span><b>🔧</b>USB-C Cable</span><small>560 pcs</small></li>
+          <li><span><b>⌨️</b>Keyboard</span><small>210 pcs</small></li>
+          <li><span><b>🖥️</b>Monitor 24”</span><small>86 pcs</small></li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+

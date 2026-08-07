@@ -1,0 +1,28 @@
+<header class="site-header" x-data="mobileMenu">
+  <div class="landing-container site-header__inner">
+    {% include "components/logo.html" %}
+    <nav class="desktop-nav" aria-label="Primary navigation">
+      <a href="#features">Product <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+      <a href="#features">Solutions <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+      <a href="#pricing">Pricing</a>
+      <a href="#resources">Resources <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+      <a href="#about">About</a>
+    </nav>
+    <div class="header-actions">
+      <a class="login-link" href="#login">Log in</a>
+      {% include "components/primary_button.html" with button_class="header-trial" %}
+    </div>
+    <button class="mobile-menu-button" type="button" aria-label="Toggle navigation" x-on:click="toggle" x-bind:aria-expanded="open">
+      <i data-lucide="menu" aria-hidden="true"></i>
+    </button>
+  </div>
+  <nav class="mobile-nav" aria-label="Mobile navigation" x-show="open" x-cloak>
+    <a href="#features">Product</a>
+    <a href="#features">Solutions</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#resources">Resources</a>
+    <a href="#about">About</a>
+    <a href="#login">Log in</a>
+  </nav>
+</header>
+

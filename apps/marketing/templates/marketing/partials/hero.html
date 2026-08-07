@@ -1,0 +1,17 @@
+<section class="landing-container hero-section">
+  <div class="hero-copy">
+    <span class="hero-eyebrow">The all-in-one business platform</span>
+    <h1>The <span>core</span> of<br><span class="hero-heading-line">your business.</span></h1>
+    <p class="hero-subtitle">Everything else flows from here.</p>
+    <p class="hero-description">CoreFlow brings your inventory, purchasing, sales, warehouse, and reports together in one simple platform so you can focus on what matters most—growing your business.</p>
+    {% include "components/primary_button.html" with button_class="hero-trial" %}
+    <div class="hero-benefits" aria-label="Trial benefits">
+      {% include "components/trial_benefit.html" with label="14-day free trial" %}
+      {% include "components/trial_benefit.html" with label="No credit card required" %}
+      <span class="desktop-only-benefit">
+        {% include "components/trial_benefit.html" with label="Cancel anytime" %}
+      </span>
+    </div>
+  </div>
+  {% include "marketing/partials/dashboard.html" %}
+</section>
