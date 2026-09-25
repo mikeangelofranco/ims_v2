@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{% block registration_title %}Create your CoreFlow account{% endblock %} — CoreFlow Platform{% endblock %}
+{% block body_class %}registration-page {% block registration_page_class %}{% endblock %}{% endblock %}
+
+{% block content %}
+  <div class="registration-shell">
+    <aside class="registration-aside">
+      {% include "components/logo.html" with logo_class="registration-logo" %}
+      {% block registration_aside_intro %}
+        <div class="registration-aside__intro">
+          <h1>The <span>core</span><br>of your business.</h1>
+          <p>Everything else flows from here.</p>
+        </div>
+      {% endblock %}
+      {% if current_step %}
+        <div class="registration-progress-card">
+          <strong>Your success journey starts here.</strong>
+          {% include "onboarding/components/progress.html" %}
+        </div>
+      {% endif %}
+      {% block registration_aside_extra %}{% endblock %}
+      <div class="registration-trust">
+        <i data-lucide="shield-check" aria-hidden="true"></i>
+        <span>Your data is protected with<br>industry-standard encryption.</span>
+      </div>
+      <p class="registration-copyright">© {% now "Y" %} CoreFlow Platform</p>
+    </aside>
+
+    <main class="registration-main">
+      <div class="registration-mobile-logo">
+        {% include "components/logo.html" with logo_class="registration-logo" %}
+        {% block registration_mobile_action %}{% endblock %}
+      </div>
+      <section class="registration-panel">
+        {% block registration_header %}{% endblock %}
+        {% if current_step %}
+          <div class="registration-mobile-progress">
+            {% include "onboarding/components/progress.html" %}
+          </div>
+        {% endif %}
+        {% block registration_content %}{% endblock %}
+      </section>
+      <div class="registration-mobile-trust">
+        <div class="registration-trust">
+          <i data-lucide="shield-check" aria-hidden="true"></i>
+          <span>Your data is protected with<br>industry-standard encryption.</span>
+        </div>
+        <p class="registration-copyright"><i data-lucide="lock-keyhole" aria-hidden="true"></i> © {% now "Y" %} CoreFlow Platform</p>
+      </div>
+    </main>
+  </div>
+{% endblock %}

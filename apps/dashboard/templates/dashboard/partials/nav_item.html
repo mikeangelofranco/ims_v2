@@ -1,0 +1,1 @@
+<a class="dashboard-nav__item{% if active %} is-active{% endif %}" href="{{ url|default:'#' }}"{% if active %} aria-current="page"{% endif %}{% if not url %} aria-disabled="true"{% endif %}><i data-lucide="{{ icon }}" aria-hidden="true"></i>{{ label }}</a>

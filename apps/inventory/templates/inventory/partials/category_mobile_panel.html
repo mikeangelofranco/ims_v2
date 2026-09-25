@@ -1,0 +1,17 @@
+<div class="ui-category-mobile-panel ui-mobile-only" id="mobile-category-panel">
+  <form method="get" class="ui-search ui-mobile-search" action="{% url 'inventory:category_list' %}" hx-get="{% url 'inventory:category_list' %}" hx-target="#mobile-category-panel" hx-swap="outerHTML" hx-push-url="true" role="search">
+    <input type="hidden" name="mobile" value="1"><input type="hidden" name="status" value="{{ selected_status }}"><input type="hidden" name="sort" value="{{ selected_sort }}"><i data-lucide="search" aria-hidden="true"></i><input type="search" name="q" id="mobile-category-search" class="ui-input" value="{{ request.GET.q }}" placeholder="Search categories..." aria-label="Search categories">
+  </form>
+  <div class="ui-category-mobile-controls">
+    <form method="get" class="ui-sort-control" hx-get="{% url 'inventory:category_list' %}" hx-target="#mobile-category-panel" hx-swap="outerHTML" hx-push-url="true" hx-trigger="change, submit">
+      <input type="hidden" name="mobile" value="1"><input type="hidden" name="q" value="{{ request.GET.q }}"><input type="hidden" name="sort" value="{{ selected_sort }}"><i data-lucide="funnel" aria-hidden="true"></i><label for="mobile-category-status">Status</label><select id="mobile-category-status" name="status" class="ui-input"><option value="all"{% if selected_status == 'all' %} selected{% endif %}>All Status</option><option value="active"{% if selected_status == 'active' %} selected{% endif %}>Active</option><option value="inactive"{% if selected_status == 'inactive' %} selected{% endif %}>Inactive</option></select><noscript><button class="ui-button" type="submit">Filter</button></noscript>
+    </form>
+    <form method="get" class="ui-sort-control" hx-get="{% url 'inventory:category_list' %}" hx-target="#mobile-category-panel" hx-swap="outerHTML" hx-push-url="true" hx-trigger="change, submit">
+      <input type="hidden" name="mobile" value="1"><input type="hidden" name="q" value="{{ request.GET.q }}"><input type="hidden" name="status" value="{{ selected_status }}"><i data-lucide="arrow-up-down" aria-hidden="true"></i><label for="mobile-category-sort">Sort</label><select id="mobile-category-sort" name="sort" class="ui-input">{% for value,label in category_sort_options %}<option value="{{ value }}"{% if selected_sort == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select><noscript><button class="ui-button" type="submit">Sort</button></noscript>
+    </form>
+  </div>
+  <div class="ui-category-feed" id="mobile-category-feed" aria-label="Categories" aria-live="polite">
+    {% for category in mobile_page %}{% include "inventory/partials/category_mobile_card.html" %}{% empty %}{% include "components/empty_state.html" with heading="No categories found" copy="Add your first category or adjust the search and status filter." %}{% endfor %}
+    {% include "inventory/partials/category_mobile_more.html" %}
+  </div>
+</div>

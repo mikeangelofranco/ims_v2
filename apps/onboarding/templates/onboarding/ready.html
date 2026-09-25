@@ -1,0 +1,35 @@
+{% extends "onboarding/registration_base.html" %}
+{% block registration_title %}Everything is ready{% endblock %}
+{% block registration_page_class %}registration-page--ready{% endblock %}
+{% block registration_aside_intro %}<div class="ready-aside-copy"><span class="ready-platform-badge">The all-in-one business platform</span><h1>Welcome to<br><span>CoreFlow.</span></h1><p>Your business is ready.<br>Everything else flows from here.</p></div>{% endblock %}
+{% block registration_aside_extra %}<div class="ready-aside-feature"><span><i data-lucide="circle-check" aria-hidden="true"></i></span><strong>Setup complete! 🎉</strong><p>Your workspace is ready to use.<br>Start exploring CoreFlow Platform.</p></div>{% endblock %}
+{% block registration_mobile_action %}<a class="ready-mobile-help" href="mailto:support@coreflow.app"><i data-lucide="circle-help" aria-hidden="true"></i> Need help?</a>{% endblock %}
+{% block registration_header %}
+  <div class="ready-topbar"><a href="mailto:support@coreflow.app"><i data-lucide="circle-help" aria-hidden="true"></i> Need help? <i data-lucide="chevron-down" aria-hidden="true"></i></a><span><b>{% if tenant.logo %}<img src="{% url 'onboarding:workspace_logo' tenant.pk %}" alt="">{% else %}{{ business.legal_name|slice:":2"|upper }}{% endif %}</b>{{ tenant.name }} <i data-lucide="chevron-down" aria-hidden="true"></i></span></div>
+  <header class="ready-heading"><span class="ready-platform-badge">The all-in-one business platform</span><div class="ready-success-mark"><i data-lucide="check" aria-hidden="true"></i></div><h2>Everything is ready!</h2><p>Your business and workspace have been set up successfully.<br>You can always update these details later in <strong>Business Settings.</strong></p></header>
+{% endblock %}
+{% block registration_content %}
+  <div class="ready-layout">
+    <div class="ready-summary">
+      <div class="ready-welcome"><span>🎉</span> Welcome to CoreFlow! Your workspace is ready to help you grow.</div>
+      <div class="ready-divider"><span>Here’s what we’ve created for you</span></div>
+      <section class="ready-glance" aria-labelledby="ready-glance-title">
+        <div class="ready-glance__header"><h3 id="ready-glance-title"><i data-lucide="building-2" aria-hidden="true"></i> Your business at a glance</h3><label class="ready-url ready-url--desktop">Workspace URL<span><input value="{{ workspace_display_url }}" readonly aria-label="Workspace URL"><button type="button" data-copy-workspace aria-label="Copy workspace URL"><i data-lucide="copy" aria-hidden="true"></i></button></span></label></div>
+        <div class="ready-glance__identity"><div class="ready-glance__logo">{% if tenant.logo %}<img src="{% url 'onboarding:workspace_logo' tenant.pk %}" alt="">{% else %}{{ business.legal_name|slice:":2"|upper }}{% endif %}</div><div><strong>{{ business.legal_name }}</strong><span>Active</span><p><i data-lucide="store" aria-hidden="true"></i> {{ business.get_industry_display }}</p><p><i data-lucide="users-round" aria-hidden="true"></i> {{ business.get_company_size_display }}</p></div></div>
+        <label class="ready-url ready-url--mobile">Workspace URL<span><input value="{{ workspace_display_url }}" readonly aria-label="Workspace URL"><button type="button" data-copy-workspace aria-label="Copy workspace URL"><i data-lucide="copy" aria-hidden="true"></i></button></span></label>
+        <div class="ready-metrics"><div><i data-lucide="box" aria-hidden="true"></i><strong>0</strong><span>Products</span><a href="{{ product_create_url }}">Add your first product <i data-lucide="arrow-right" aria-hidden="true"></i></a></div><div><i data-lucide="users-round" aria-hidden="true"></i><strong>0</strong><span>Customers</span><a href="{{ workspace_url }}">Invite your team <i data-lucide="arrow-right" aria-hidden="true"></i></a></div><div><i data-lucide="shopping-cart" aria-hidden="true"></i><strong>0</strong><span>Orders</span><a href="{{ workspace_url }}">Create your first order <i data-lucide="arrow-right" aria-hidden="true"></i></a></div><div><i data-lucide="globe-2" aria-hidden="true"></i><strong>{{ timezone_label }}</strong><span>Timezone</span><a href="{{ workspace_url }}">Change timezone <i data-lucide="arrow-right" aria-hidden="true"></i></a></div></div>
+      </section>
+      <div class="ready-workspace-cta"><div><strong>Your workspace is waiting.</strong><p>Start managing your business and make things happen.</p></div><a class="button-primary" href="{{ workspace_url }}">Go to Workspace <i data-lucide="arrow-right" aria-hidden="true"></i></a></div>
+    </div>
+    <aside class="ready-next" aria-labelledby="ready-next-title">
+      <div class="ready-next__heading"><i data-lucide="sparkles" aria-hidden="true"></i><div><h3 id="ready-next-title">What’s next?</h3><p>Recommended steps to get the most out of CoreFlow.</p></div></div>
+      {% include "onboarding/partials/next_step.html" with icon="user-plus" tone="blue" title="Invite your team" copy="Add members and set roles & permissions." recommended=True %}
+      {% include "onboarding/partials/next_step.html" with icon="box" tone="green" title="Add your first product" copy="Start building your inventory by adding products." href=product_create_url %}
+      {% include "onboarding/partials/next_step.html" with icon="upload" tone="yellow" title="Import your products" copy="Save time by importing products via CSV file." href=product_import_url %}
+      {% include "onboarding/partials/next_step.html" with icon="palette" tone="purple" title="Customize your workspace" copy="Upload your logo and set up your brand preferences." %}
+      {% include "onboarding/partials/next_step.html" with icon="chart-no-axes-column-increasing" tone="blue" title="Explore your dashboard" copy="Get insights and an overview of your business." %}
+      <div class="ready-help-card"><i data-lucide="circle-help" aria-hidden="true"></i><div><strong>Need help?</strong><p>Visit our Help Center for guides and answers to common questions.</p><a href="mailto:support@coreflow.app">Go to Help Center <i data-lucide="arrow-right" aria-hidden="true"></i></a></div></div>
+    </aside>
+  </div>
+  <p class="ready-security"><i data-lucide="lock-keyhole" aria-hidden="true"></i> Enterprise-grade security built into CoreFlow.</p>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "components/workspace/layout.html" %}
+{% block title %}{{ heading }} — {{ tenant.name }}{% endblock %}
+{% block workspace_content %}
+<div class="ui-page-heading"><div><h1>{{ heading }}</h1><p>Product details and pricing for your workspace.</p></div></div>
+<form method="post" enctype="multipart/form-data" class="ui-card workspace-form">{% csrf_token %}{% include "components/form_errors.html" %}
+<div class="ui-form-grid">{% for field in form %}{% include "components/form_field.html" with field=field %}{% endfor %}</div>
+{% if stock_form %}<fieldset><legend>Opening stock</legend><p class="ui-muted">Choose a location to record opening inventory. Stock changes are recorded in the inventory ledger.</p><div class="ui-form-grid">{% for field in stock_form %}{% include "components/form_field.html" with field=field %}{% endfor %}</div></fieldset>{% endif %}
+<div class="workspace-actions">{% include "components/button.html" with type="submit" label="Save Product" primary=True %}{% url 'inventory:product_list' as list_url %}{% include "components/button.html" with href=list_url label="Cancel" %}</div>
+</form>{% endblock %}

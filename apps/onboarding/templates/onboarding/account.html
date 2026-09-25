@@ -1,0 +1,24 @@
+{% extends "onboarding/registration_base.html" %}
+
+{% block registration_header %}
+  <header class="registration-heading">
+    <h2>{% if is_editing %}Review your account.{% else %}Create your CoreFlow account.{% endif %}</h2>
+    <p>{% if is_editing %}Update your details before creating your workspace.{% else %}You’ll be running your workspace in less than a minute.{% endif %}</p>
+  </header>
+{% endblock %}
+
+{% block registration_content %}
+  <form class="registration-form" method="post" novalidate x-data="passwordVisibility">
+    {% csrf_token %}
+    {% include "components/form_errors.html" %}
+    {% include "components/form_field.html" with field=form.first_name icon="user-round" %}
+    {% include "components/form_field.html" with field=form.email icon="mail" %}
+    <div x-bind:class="visible ? 'password-is-visible' : ''">
+      {% include "components/form_field.html" with field=form.password icon="lock-keyhole" password_toggle=True help_text="At least 8 characters with a mix of letters, numbers, and symbols." mobile_help_text="Password must be at least 8 characters with a mix of letters, numbers, and symbols." %}
+    </div>
+    <button class="button-primary registration-submit" type="submit">
+      <span>Continue</span><i data-lucide="arrow-right" aria-hidden="true"></i>
+    </button>
+  </form>
+  <p class="registration-signin">Already have an account? <a href="{% url 'onboarding:sign_in' %}">Sign in</a></p>
+{% endblock %}

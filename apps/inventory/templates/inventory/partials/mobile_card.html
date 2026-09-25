@@ -1,0 +1,7 @@
+{% load inventory_ui %}
+<article class="ui-product-card" aria-label="{{ product.name }}" data-mobile-product="{{ product.pk }}">
+  <a class="ui-product-detail-link" href="{% url 'inventory:product_detail' product.pk %}" aria-label="View {{ product.name }}">{% include "components/product_thumbnail.html" with large=True %}</a>
+  <div class="ui-product-card__details"><h2><a class="ui-product-detail-link" href="{% url 'inventory:product_detail' product.pk %}">{{ product.name }}</a></h2><p>{{ product.description|default:'—' }}</p><p>{{ product.sku }} <span aria-hidden="true">|</span> {{ product.category.name|default:'Uncategorized' }}</p></div>
+  <div class="ui-product-card__stock"><span><strong class="ui-stock ui-stock--{{ product.stock_status }}">{{ product.total_quantity }}</strong> / {{ product.total_minimum }}</span>{% include "components/badge.html" with tone=product.stock_status label=product.stock_status|stock_label %}<strong class="ui-price">{{ currency_symbol }}{{ product.selling_price|floatformat:'-2g' }}</strong><span class="sr-only">Current stock / minimum stock</span></div>
+  {% include "components/product_actions.html" %}
+</article>

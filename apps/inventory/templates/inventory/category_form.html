@@ -1,0 +1,8 @@
+{% extends "components/workspace/layout.html" %}
+{% block title %}{{ heading }} — {{ tenant.name }}{% endblock %}
+{% block workspace_content %}
+{% url 'inventory:category_list' as list_url %}
+<nav class="ui-breadcrumb" aria-label="Breadcrumb"><a class="ui-link" href="{{ list_url }}"><i data-lucide="arrow-left" aria-hidden="true"></i>Categories</a><i data-lucide="chevron-right" aria-hidden="true"></i><span aria-current="page">{{ heading }}</span></nav>
+<div class="ui-page-heading"><div><h1>{{ heading }}</h1><p>Define how products are organized in this workspace.</p></div>{% include "components/button.html" with href=list_url label="Back to Categories" icon="arrow-left" %}</div>
+<form method="post" class="ui-card workspace-form ui-category-form"{% if category %} action="{% url 'inventory:category_edit' category.pk %}"{% else %} action="{% url 'inventory:category_create' %}"{% endif %}>{% csrf_token %}{% include "components/form_errors.html" %}<div class="ui-form-grid">{% for field in form %}{% include "components/forms/field.html" with field=field %}{% endfor %}</div><div class="workspace-actions">{% include "components/button.html" with href=list_url label="Cancel" %}{% include "components/button.html" with type="submit" label=submit_label primary=True icon="save" %}</div></form>
+{% endblock %}

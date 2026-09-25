@@ -1,0 +1,1 @@
+<span class="ui-thumbnail{% if large %} ui-thumbnail--large{% endif %}">{% if product.image %}<img src="{% url 'inventory:product_image' product.pk %}" alt="" loading="lazy">{% else %}<i data-lucide="box" aria-hidden="true"></i>{% endif %}</span>

@@ -1,0 +1,2 @@
+<h2 id="catalog-dialog-title">{{ heading }}</h2>
+<form method="post" action="{% url action_url %}" hx-post="{% url action_url %}" hx-target="#workspace-dialog-body">{% csrf_token %}{% include "components/form_errors.html" %}{% for field in form %}{% include "components/forms/field.html" with field=field %}{% endfor %}<div class="workspace-actions">{% include "components/button.html" with type="submit" label="Create" primary=True %}<button type="button" class="ui-button" data-close-dialog>Cancel</button></div></form>

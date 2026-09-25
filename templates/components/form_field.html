@@ -1,0 +1,20 @@
+<div class="form-field {% if field.errors %}form-field--invalid{% endif %}">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  <div class="form-control">
+    {% if icon %}<i data-lucide="{{ icon }}" aria-hidden="true"></i>{% endif %}
+    {{ field }}
+    {% if password_toggle %}
+      <button class="password-toggle" type="button" aria-label="Show or hide password" x-on:click="toggle" x-bind:aria-pressed="visible">
+        <i data-lucide="eye" aria-hidden="true" x-show="!visible"></i>
+        <i data-lucide="eye-off" aria-hidden="true" x-show="visible" x-cloak></i>
+      </button>
+    {% endif %}
+  </div>
+  {% if help_text %}
+    <p class="form-help">
+      <span {% if mobile_help_text %}class="desktop-help-text"{% endif %}>{{ help_text }}</span>
+      {% if mobile_help_text %}<span class="mobile-help-text">{{ mobile_help_text }}</span>{% endif %}
+    </p>
+  {% endif %}
+  {% for error in field.errors %}<p class="form-error" id="{{ field.auto_id }}_error">{{ error }}</p>{% endfor %}
+</div>

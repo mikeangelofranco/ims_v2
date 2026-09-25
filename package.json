@@ -7,8 +7,9 @@
     "build:fonts": "mkdir -p static/fonts && cp node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2 static/fonts/inter-latin-wght-normal.woff2",
     "build:css": "tailwindcss -i static/src/app.css -o static/css/app.css --minify",
     "build:js": "esbuild static/src/app.js --bundle --minify --outfile=static/js/app.js",
-    "dev": "npm run dev:css",
-    "dev:css": "tailwindcss -i static/src/app.css -o static/css/app.css --watch"
+    "dev": "npm run build:fonts && node scripts/watch-assets.mjs",
+    "dev:css": "tailwindcss -i static/src/app.css -o static/css/app.css --watch=always",
+    "dev:js": "esbuild static/src/app.js --bundle --outfile=static/js/app.js --watch=forever"
   },
   "dependencies": {
     "@alpinejs/csp": "^3.14.0",

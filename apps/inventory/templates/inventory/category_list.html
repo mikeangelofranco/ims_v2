@@ -1,0 +1,40 @@
+{% extends "components/workspace/layout.html" %}
+{% load inventory_ui %}
+{% block title %}Categories — {{ tenant.name }}{% endblock %}
+{% block workspace_content_class %}ui-category-page{% endblock %}
+{% block workspace_content %}
+<div class="ui-page-heading"><div><h1>Categories</h1><p>Organize products into categories for easier inventory management.</p></div>{% if can_edit %}{% url 'inventory:category_create' as create_url %}{% include "components/button.html" with href=create_url label="Add Category" icon="plus" primary=True %}{% endif %}</div>
+<section class="workspace-stats ui-category-stats-desktop" aria-label="Category overview">
+  {% include "components/stat_card.html" with icon="folder" tone="blue" label="Total Categories" value=total_categories copy="Across all products" %}
+  {% include "components/stat_card.html" with icon="circle-check" tone="green" label="Active Categories" value=active_categories copy="Currently available" %}
+  {% include "components/stat_card.html" with icon="triangle-alert" tone="orange" label="Uncategorized Products" value=uncategorized_products copy="Needs attention" %}
+</section>
+<section class="ui-category-stats-mobile ui-mobile-only" aria-label="Category overview">
+  <article class="ui-card"><span><i data-lucide="folder" aria-hidden="true"></i></span><div><small>Total Categories</small><strong>{{ total_categories }}</strong></div></article>
+  <article class="ui-card"><span><i data-lucide="circle-check" aria-hidden="true"></i></span><div><small>Active</small><strong>{{ active_categories }}</strong></div></article>
+  <article class="ui-card"><span><i data-lucide="triangle-alert" aria-hidden="true"></i></span><div><small>Uncategorized</small><strong>{{ uncategorized_products }}</strong></div><a href="{% url 'inventory:product_list' %}?category=uncategorized">View products<i data-lucide="arrow-right" aria-hidden="true"></i></a></article>
+</section>
+<section class="ui-card ui-category-list" aria-label="Category list">
+  <form class="ui-category-toolbar ui-desktop-only" method="get" action="{% url 'inventory:category_list' %}">
+    <label class="ui-search ui-category-search"><i data-lucide="search" aria-hidden="true"></i><span class="sr-only">Search categories</span><input class="ui-input" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search categories..."></label>
+    <div class="list-filters"><input type="hidden" name="sort" value="{{ selected_sort }}"><input type="hidden" name="per_page" value="{{ per_page }}"><label class="sr-only" for="category-status">Category status</label><select class="ui-input" id="category-status" name="status"><option value="all"{% if selected_status == 'all' %} selected{% endif %}>All Status</option><option value="active"{% if selected_status == 'active' %} selected{% endif %}>Active</option><option value="inactive"{% if selected_status == 'inactive' %} selected{% endif %}>Inactive</option></select>{% include "components/button.html" with type="submit" label="Filter" icon="funnel" %}</div>
+  </form>
+  {% include "inventory/partials/category_mobile_panel.html" %}
+  <div class="ui-table-wrap ui-desktop-only"><table class="ui-table ui-category-table"><caption class="sr-only">Categories and the number of products assigned to each.</caption>
+    <thead><tr><th scope="col"><input type="checkbox" class="ui-checkbox" aria-label="Select all categories on this page"></th>{% for key,label,next_sort in sort_headers %}<th scope="col"{% if request.GET.sort == key %} aria-sort="ascending"{% elif request.GET.sort == '-'|add:key %} aria-sort="descending"{% endif %}><a class="ui-sort" href="{% product_query sort=next_sort page=None %}">{{ label }}<i data-lucide="arrow-up-down" aria-hidden="true"></i></a></th>{% endfor %}<th scope="col">Actions</th></tr></thead>
+    <tbody>{% for category in page_obj %}<tr>
+      <td><input type="checkbox" class="ui-checkbox" value="{{ category.pk }}" aria-label="Select {{ category.name }}"></td>
+      <td><div class="ui-category-name"><span><i data-lucide="{{ category.icon }}" aria-hidden="true"></i></span><div><strong>{{ category.name }}</strong><small>{{ category.code }}</small></div></div></td>
+      <td>{{ category.description|default:"—" }}</td>
+      <td><a class="ui-category-count" href="{% url 'inventory:product_list' %}?category={{ category.pk }}">{{ category.product_count }}</a></td>
+      <td>{% include "components/badge.html" with tone=category.is_active|yesno:'in,inactive' label=category.is_active|yesno:'Active,Inactive' %}</td>
+      <td><time datetime="{{ category.updated_at|date:'c' }}">{{ category.updated_at|date:'M j, Y' }}</time><small class="ui-muted">by {% if category.updated_by %}{{ category.updated_by.get_full_name|default:category.updated_by.email }}{% else %}—{% endif %}</small></td>
+      <td><div class="ui-row-actions">{% if can_edit %}<a class="ui-button ui-button--icon" href="{% url 'inventory:category_edit' category.pk %}" aria-label="Edit {{ category.name }}"><i data-lucide="pencil" aria-hidden="true"></i></a>{% endif %}<details class="ui-dropdown ui-category-more"><summary class="ui-button ui-button--icon" aria-label="More actions for {{ category.name }}"><i data-lucide="ellipsis-vertical" aria-hidden="true"></i></summary><div><a href="{% url 'inventory:product_list' %}?category={{ category.pk }}"><i data-lucide="box" aria-hidden="true"></i>View Products</a>{% if can_edit %}<form method="post" action="{% url 'inventory:category_status' category.pk %}">{% csrf_token %}<input type="hidden" name="active" value="{{ category.is_active|yesno:'false,true' }}"><button type="submit"><i data-lucide="{% if category.is_active %}archive{% else %}circle-check{% endif %}" aria-hidden="true"></i>{% if category.is_active %}Deactivate{% else %}Activate{% endif %}</button></form>{% endif %}</div></details></div></td>
+    </tr>{% empty %}<tr><td colspan="7">{% include "components/empty_state.html" with heading="No categories found" copy="Add your first category or adjust the search and status filter." %}</td></tr>{% endfor %}</tbody>
+  </table></div>
+  <footer class="list-footer ui-desktop-only"><form method="get" class="list-page-size"><input type="hidden" name="q" value="{{ request.GET.q }}"><input type="hidden" name="status" value="{{ selected_status }}"><input type="hidden" name="sort" value="{{ selected_sort }}"><label for="category-page-size">Show</label><select id="category-page-size" name="per_page" class="ui-input" data-page-size><option{% if per_page == 10 %} selected{% endif %}>10</option><option{% if per_page == 25 %} selected{% endif %}>25</option><option{% if per_page == 50 %} selected{% endif %}>50</option><option{% if per_page == 100 %} selected{% endif %}>100</option></select><span>per page</span></form>
+    <p>Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} categories</p>
+    <nav class="ui-pagination" aria-label="Category pagination">{% if page_obj.has_previous %}<a class="ui-button ui-button--icon" aria-label="Previous page" href="{% product_query page=page_obj.previous_page_number %}"><i data-lucide="arrow-left" aria-hidden="true"></i></a>{% else %}<button class="ui-button ui-button--icon" disabled aria-label="Previous page"><i data-lucide="arrow-left" aria-hidden="true"></i></button>{% endif %}{% for number in page_range %}{% if number == page_obj.paginator.ELLIPSIS %}<span>{{ number }}</span>{% else %}<a class="ui-button ui-button--icon{% if number == page_obj.number %} ui-button--primary{% endif %}" href="{% product_query page=number %}"{% if number == page_obj.number %} aria-current="page"{% endif %}>{{ number }}</a>{% endif %}{% endfor %}{% if page_obj.has_next %}<a class="ui-button ui-button--icon" aria-label="Next page" href="{% product_query page=page_obj.next_page_number %}"><i data-lucide="arrow-right" aria-hidden="true"></i></a>{% else %}<button class="ui-button ui-button--icon" disabled aria-label="Next page"><i data-lucide="arrow-right" aria-hidden="true"></i></button>{% endif %}</nav>
+  </footer>
+</section>
+{% endblock %}

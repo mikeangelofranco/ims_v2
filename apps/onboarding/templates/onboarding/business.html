@@ -1,0 +1,64 @@
+{% extends "onboarding/registration_base.html" %}
+
+{% block registration_title %}Create your business{% endblock %}
+{% block registration_page_class %}registration-page--business{% endblock %}
+
+{% block registration_aside_intro %}
+  <div class="business-aside-copy">
+    <span class="business-aside-badge">The all-in-one business platform</span>
+    <h1>Your <span>business</span><br>starts here.</h1>
+    <p>Your business is where your team collaborates, manages inventory, tracks operations, and grows together.</p>
+  </div>
+{% endblock %}
+
+{% block registration_aside_extra %}
+  <div class="business-aside-feature">
+    <span><i data-lucide="building-2" aria-hidden="true"></i></span>
+    <div><strong>Set up your business identity.</strong><p>Configure your business profile now. You can invite your team later.</p></div>
+  </div>
+{% endblock %}
+
+{% block registration_mobile_action %}
+  <a class="registration-help" href="mailto:support@coreflow.app" aria-label="Get help"><i data-lucide="circle-help" aria-hidden="true"></i></a>
+{% endblock %}
+
+{% block registration_header %}
+  <a class="business-desktop-help" href="mailto:support@coreflow.app"><i data-lucide="circle-help" aria-hidden="true"></i> Need help?</a>
+  <header class="registration-heading business-heading">
+    <span>Step 3 of 4</span>
+    <h2>Create your business.</h2>
+    <p>Tell us about your business so we can personalize your experience.</p>
+  </header>
+{% endblock %}
+
+{% block registration_content %}
+  <form class="business-form" method="post" novalidate data-business-form>
+    {% csrf_token %}
+    <div class="business-fields">
+      {% include "components/form_errors.html" %}
+      <div class="business-field field-name"><label for="{{ form.legal_name.id_for_label }}">{{ form.legal_name.label }}</label><div class="business-control"><i data-lucide="building-2" aria-hidden="true"></i>{{ form.legal_name }}</div>{% include "onboarding/partials/field_error.html" with field=form.legal_name %}<p>This is the legal name of your company or organization.</p></div>
+      <div class="business-field field-industry"><label for="{{ form.industry.id_for_label }}">{{ form.industry.label }}</label><div class="business-control business-select"><i data-lucide="tag" aria-hidden="true"></i>{{ form.industry }}<i data-lucide="chevron-down" aria-hidden="true"></i></div>{% include "onboarding/partials/field_error.html" with field=form.industry %}<p>Choose the industry that best describes your business.</p></div>
+      <div class="business-field field-size"><label for="{{ form.company_size.id_for_label }}">{{ form.company_size.label }}</label><div class="business-control business-select"><i data-lucide="users-round" aria-hidden="true"></i>{{ form.company_size }}<i data-lucide="chevron-down" aria-hidden="true"></i></div>{% include "onboarding/partials/field_error.html" with field=form.company_size %}<p>This helps us tailor features for your team size.</p></div>
+      <div class="business-field field-email"><label for="{{ form.business_email.id_for_label }}">{{ form.business_email.label }}</label><div class="business-control"><i data-lucide="mail" aria-hidden="true"></i>{{ form.business_email }}</div>{% include "onboarding/partials/field_error.html" with field=form.business_email %}<p>We'll use this for important notifications and updates.</p></div>
+      <div class="business-field field-currency"><label for="{{ form.currency.id_for_label }}">{{ form.currency.label }}</label><div class="business-control business-select"><i data-lucide="badge-dollar-sign" aria-hidden="true"></i>{{ form.currency }}<span class="business-detected">Detected</span><i data-lucide="chevron-down" aria-hidden="true"></i></div>{% include "onboarding/partials/field_error.html" with field=form.currency %}<p>Detected from your location. You can change this later.</p></div>
+      <div class="business-field field-timezone"><label for="{{ form.timezone.id_for_label }}">{{ form.timezone.label }}</label><div class="business-control business-select"><i data-lucide="globe-2" aria-hidden="true"></i>{{ form.timezone }}<span class="business-detected">Detected</span><i data-lucide="chevron-down" aria-hidden="true"></i></div>{% include "onboarding/partials/field_error.html" with field=form.timezone %}<p>Detected based on your location.</p></div>
+
+      <details class="business-details">
+        <summary><i data-lucide="file-text" aria-hidden="true"></i><span><strong>Additional details <em>(optional)</em></strong><small>Add address, tax information, registration number, and other business details.</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+        <div class="business-details__fields"><div><label for="{{ form.address.id_for_label }}">Business address</label>{{ form.address }}{% include "onboarding/partials/field_error.html" with field=form.address %}</div><div><label for="{{ form.tax_identifier.id_for_label }}">{{ form.tax_identifier.label }}</label>{{ form.tax_identifier }}{% include "onboarding/partials/field_error.html" with field=form.tax_identifier %}</div><div><label for="{{ form.registration_number.id_for_label }}">{{ form.registration_number.label }}</label>{{ form.registration_number }}{% include "onboarding/partials/field_error.html" with field=form.registration_number %}</div></div>
+      </details>
+    </div>
+
+    <aside class="business-preview" aria-label="Business preview">
+      <div class="business-preview__heading"><i data-lucide="sparkles" aria-hidden="true"></i><div><strong>Business preview</strong><p>Here's how your business will appear in CoreFlow.</p></div><span>View all</span></div>
+      <div class="business-preview__cover"></div>
+      <div class="business-preview__identity"><div class="business-preview__logo">{% if tenant.logo %}<img src="{% url 'onboarding:workspace_logo' tenant.pk %}" alt="">{% else %}<span data-business-initials>{{ tenant.name|slice:":1"|upper }}</span>{% endif %}</div><div><strong data-business-name-preview>{{ tenant.name }}</strong><span class="business-active">Active</span><p><i data-lucide="store" aria-hidden="true"></i> <span data-business-industry-preview>Select your industry</span></p><p><i data-lucide="users-round" aria-hidden="true"></i> <span data-business-size-preview>Select your team size</span></p></div><i data-lucide="chevron-right" aria-hidden="true"></i></div>
+      <div class="business-preview__stats"><span><i data-lucide="box" aria-hidden="true"></i><strong>0</strong><small>Products</small></span><span><i data-lucide="users-round" aria-hidden="true"></i><strong>0</strong><small>Customers</small></span><span><i data-lucide="shopping-cart" aria-hidden="true"></i><strong>0</strong><small>Orders</small></span></div>
+      <dl class="business-preview__details"><div><dt><i data-lucide="badge-dollar-sign" aria-hidden="true"></i> Currency</dt><dd data-business-currency-preview>Philippine Peso (PHP)</dd></div><div><dt><i data-lucide="globe-2" aria-hidden="true"></i> Timezone</dt><dd data-business-timezone-preview>Asia/Manila (GMT+08:00)</dd></div><div><dt><i data-lucide="link" aria-hidden="true"></i> Workspace URL</dt><dd>{{ tenant.slug }}.{{ display_domain }}</dd></div></dl>
+    </aside>
+
+    <div class="business-ready"><i data-lucide="circle-check" aria-hidden="true"></i><div><strong>Ready to continue!</strong><p>You can edit all details anytime in <b>Business Settings.</b></p></div></div>
+    <div class="business-actions"><a class="button-secondary" href="{% url 'onboarding:workspace' %}?edit=1"><i data-lucide="arrow-left" aria-hidden="true"></i> Back</a><button class="button-primary" type="submit"><span>Continue</span><i data-lucide="arrow-right" aria-hidden="true"></i></button></div>
+    <p class="business-security"><i data-lucide="lock-keyhole" aria-hidden="true"></i> Your information is secure and encrypted.</p>
+  </form>
+{% endblock %}

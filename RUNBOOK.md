@@ -64,6 +64,13 @@ This runbook mirrors the local workflow used by the neighboring ClinicSuite proj
    python manage.py runserver
    ```
 
+   Keep `npm run dev` running: it rebuilds CSS after every CSS, HTML, or JavaScript source change, and
+   rebuilds JavaScript when its entry point or imports change.
+   Django automatically reloads Python changes. Refresh the page after asset
+   changes; development asset URLs update automatically to bypass browser caches.
+   Ctrl+C stops both asset watchers. Use `npm run build` for production bundles.
+   This does not automatically reload an already open browser page.
+
 ## Useful commands
 
 ```bash

@@ -1,0 +1,123 @@
+{% extends "onboarding/registration_base.html" %}
+
+{% block registration_title %}Create your workspace{% endblock %}
+{% block registration_page_class %}registration-page--workspace{% endblock %}
+
+{% block registration_aside_intro %}
+  <div class="registration-aside__intro workspace-aside__intro">
+    <h1>Your <span>business</span><br>starts here.</h1>
+    <p>Your workspace is where your team collaborates, manages inventory, tracks operations, and grows together.</p>
+  </div>
+{% endblock %}
+
+{% block registration_aside_extra %}
+  <div class="workspace-team-card">
+    <span class="workspace-team-card__art"><i data-lucide="users-round" aria-hidden="true"></i></span>
+    <span><strong>Built for your team.</strong>Invite members, set roles,<br>and start collaborating<br>in minutes.</span>
+  </div>
+{% endblock %}
+
+{% block registration_mobile_action %}
+  <a class="workspace-help-button" href="mailto:support@coreflow.app" aria-label="Get help">
+    <i data-lucide="circle-help" aria-hidden="true"></i>
+  </a>
+{% endblock %}
+
+{% block registration_header %}
+  <header class="registration-heading workspace-heading">
+    <span class="workspace-step-kicker">Step 2 of 4</span>
+    <h2>Create your workspace.</h2>
+    <p><span class="workspace-desktop-copy">Let’s set up your workspace to get you started.</span><span class="workspace-mobile-copy">Your business starts here.</span></p>
+  </header>
+{% endblock %}
+
+{% block registration_content %}
+  <form class="workspace-form" method="post" enctype="multipart/form-data" novalidate data-workspace-form>
+    {% csrf_token %}
+    {% include "components/form_errors.html" %}
+
+    <section class="workspace-setting workspace-setting--name">
+      <div class="workspace-setting__heading">
+        <span class="workspace-setting__icon"><i data-lucide="building-2" aria-hidden="true"></i></span>
+        <label for="{{ form.workspace_name.id_for_label }}">Workspace name</label>
+      </div>
+      <div class="workspace-setting__control">{{ form.workspace_name }}</div>
+      <p class="workspace-setting__help">This is the name of your company or organization.</p>
+      {% for error in form.workspace_name.errors %}<p class="form-error" id="{{ form.workspace_name.auto_id }}_error">{{ error }}</p>{% endfor %}
+    </section>
+
+    <section class="workspace-setting workspace-setting--slug">
+      <div class="workspace-setting__heading">
+        <span class="workspace-setting__icon"><i data-lucide="link" aria-hidden="true"></i></span>
+        <label for="{{ form.workspace_slug.id_for_label }}">Workspace <span class="workspace-desktop-copy">slug (</span>URL<span class="workspace-desktop-copy">)</span></label>
+      </div>
+      <div class="workspace-setting__control workspace-slug-control">
+        {{ form.workspace_slug }}
+        <span>.{{ display_domain }}</span>
+      </div>
+      <div id="workspace-slug-feedback" aria-live="polite">
+        {% include "onboarding/partials/workspace_slug_feedback.html" with slug=form.workspace_slug.value|default:"your-workspace" errors=form.workspace_slug.errors %}
+      </div>
+    </section>
+
+    <section class="workspace-setting workspace-setting--logo">
+      <div class="workspace-setting__heading">
+        <span class="workspace-setting__icon"><i data-lucide="image" aria-hidden="true"></i></span>
+        <label for="{{ form.logo.id_for_label }}">Workspace logo (optional)</label>
+      </div>
+      <div class="workspace-logo-picker">
+        <span class="workspace-logo-preview" data-logo-preview>{% if tenant.logo %}<img src="{% url 'onboarding:workspace_logo' tenant.pk %}" alt="Current workspace logo">{% else %}<span data-logo-initials>WS</span>{% endif %}</span>
+        <span class="workspace-logo-copy">
+          <label class="workspace-logo-action" for="{{ form.logo.id_for_label }}"><i data-lucide="cloud-upload" aria-hidden="true"></i><span data-logo-action>{% if tenant.logo %}Change logo{% else %}Upload logo{% endif %}</span></label>
+          <span>PNG, JPG, or SVG. Max size 2MB.</span>
+          <small>Optional</small>
+        </span>
+        {{ form.logo }}
+      </div>
+      {% for error in form.logo.errors %}<p class="form-error" id="{{ form.logo.auto_id }}_error">{{ error }}</p>{% endfor %}
+    </section>
+
+    <div class="workspace-browser-preview" aria-hidden="true">
+      <div class="workspace-browser-preview__bar"><span></span><span></span><span></span><small>https://<b data-slug-preview>your-workspace</b>.{{ display_domain }}</small></div>
+      <div class="workspace-browser-preview__body">
+        <span class="workspace-browser-preview__logo" data-logo-preview>{% if tenant.logo %}<img src="{% url 'onboarding:workspace_logo' tenant.pk %}" alt="">{% else %}<span data-logo-initials>WS</span>{% endif %}</span>
+        <strong data-workspace-name-preview>Your Workspace</strong>
+        <span></span><span></span><span></span>
+      </div>
+      <p><i data-lucide="circle-check" aria-hidden="true"></i>Your workspace will be ready in seconds.</p>
+    </div>
+
+    <section class="workspace-setting workspace-setting--role">
+      <div class="workspace-setting__heading">
+        <span class="workspace-setting__icon"><i data-lucide="shield-check" aria-hidden="true"></i></span>
+        <span><strong>Workspace Owner</strong><small>Full administrative access</small></span>
+        <span class="workspace-default-badge">Default</span>
+      </div>
+      <p class="workspace-setting__help">You can invite and manage members later.</p>
+    </section>
+
+    <section class="workspace-setting workspace-setting--timezone">
+      <div class="workspace-setting__heading">
+        <span class="workspace-setting__icon"><i data-lucide="globe-2" aria-hidden="true"></i></span>
+        <label for="{{ form.timezone.id_for_label }}">Workspace timezone</label>
+      </div>
+      <div class="workspace-timezone-control">
+        {{ form.timezone }}
+        <span class="workspace-detected-badge">Detected</span>
+        <i data-lucide="chevron-down" aria-hidden="true"></i>
+      </div>
+      <p class="workspace-setting__help">Detected based on your location.</p>
+      {% for error in form.timezone.errors %}<p class="form-error" id="{{ form.timezone.auto_id }}_error">{{ error }}</p>{% endfor %}
+    </section>
+
+    <div class="workspace-settings-notice">
+      <i data-lucide="info" aria-hidden="true"></i>
+      <span><strong>You can update your workspace settings anytime.</strong><small>You can always change the name, logo, timezone, and other preferences later.</small></span>
+    </div>
+
+    <footer class="workspace-form-actions">
+      <a class="workspace-back-button" href="{% url 'onboarding:account' %}?edit=1"><i data-lucide="arrow-left" aria-hidden="true"></i>Back</a>
+      <button class="button-primary workspace-continue-button" type="submit"><span>Continue</span><i data-lucide="arrow-right" aria-hidden="true"></i></button>
+    </footer>
+  </form>
+{% endblock %}

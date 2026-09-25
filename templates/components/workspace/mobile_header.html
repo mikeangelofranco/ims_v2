@@ -1,0 +1,6 @@
+<header class="ui-mobile-header">
+  <button type="button" class="ui-button ui-button--icon" aria-label="Open navigation" x-on:click="toggle" x-bind:aria-expanded="open"><i data-lucide="menu" aria-hidden="true"></i></button>
+  {% include "components/logo.html" %}
+  {% if stock_active %}<button class="ui-button ui-button--icon" type="button" aria-label="Notifications"><i data-lucide="bell" aria-hidden="true"></i></button>{% else %}<a class="ui-button ui-button--icon" href="{% url 'inventory:product_list' %}#mobile-product-search" data-focus-target="mobile-product-search" aria-label="Search products"><i data-lucide="search" aria-hidden="true"></i></a>{% endif %}
+  <details class="dashboard-account-menu"><summary aria-label="Account menu"><b>{{ request.user.first_name|default:request.user.email|slice:':2'|upper }}</b><i data-lucide="chevron-down" aria-hidden="true"></i></summary><div>{% include "dashboard/partials/logout_form.html" %}</div></details>
+</header>

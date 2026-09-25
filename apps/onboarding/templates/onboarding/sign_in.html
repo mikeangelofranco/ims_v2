@@ -1,0 +1,25 @@
+{% extends "onboarding/registration_base.html" %}
+
+{% block registration_title %}Sign in{% endblock %}
+{% block registration_header %}
+  <header class="registration-heading">
+    <h2>Welcome back.</h2>
+    <p>Sign in to continue to your CoreFlow workspace.</p>
+  </header>
+{% endblock %}
+
+{% block registration_content %}
+  <form class="registration-form" method="post" novalidate x-data="passwordVisibility">
+    {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    {% include "components/form_errors.html" %}
+    {% include "components/form_field.html" with field=form.email icon="mail" %}
+    <div x-bind:class="visible ? 'password-is-visible' : ''">
+      {% include "components/form_field.html" with field=form.password icon="lock-keyhole" password_toggle=True %}
+    </div>
+    <button class="button-primary registration-submit" type="submit">
+      <span>Sign in</span><i data-lucide="arrow-right" aria-hidden="true"></i>
+    </button>
+  </form>
+  <p class="registration-signin">New to CoreFlow? <a href="{% url 'onboarding:account' %}">Create an account</a></p>
+{% endblock %}

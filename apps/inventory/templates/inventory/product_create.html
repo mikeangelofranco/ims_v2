@@ -1,0 +1,54 @@
+{% extends "components/workspace/layout.html" %}
+{% block title %}Add Product — {{ tenant.name }}{% endblock %}
+{% block workspace_main_class %}workspace-main--compact workspace-main--add-product{% endblock %}
+{% block workspace_content_class %}ui-editor-page{% endblock %}
+{% block workspace_content %}
+{% url 'inventory:product_list' as list_url %}
+<nav class="ui-breadcrumb" aria-label="Breadcrumb"><a class="ui-link" href="{{ list_url }}"><i data-lucide="arrow-left" aria-hidden="true"></i>Products</a><i data-lucide="chevron-right" aria-hidden="true"></i><span aria-current="page">Add Product</span></nav>
+<div class="ui-page-heading ui-page-heading--form"><div><h1>Add Product</h1><p>Create a new product and add it to your inventory.</p></div>{% include "components/button.html" with href=list_url label="Back to Products" icon="arrow-left" %}</div>
+<form method="post" enctype="multipart/form-data" id="add-product-form" class="ui-editor" data-product-editor>{% csrf_token %}
+{% include "components/form_errors.html" %}{% if stock_form.non_field_errors %}<div class="ui-alert ui-alert--danger" role="alert">{{ stock_form.non_field_errors }}</div>{% endif %}
+<div class="ui-editor-grid"><div class="ui-editor-main">
+<section class="ui-card ui-editor-section ui-editor-panel" aria-labelledby="basic-title" data-editor-panel data-default-expanded="true">
+{% include "components/section_heading.html" with icon="box" title="Basic Information" heading_id="basic-title" copy="Essential details about your product." panel_id="basic-fields" %}
+<div class="ui-editor-panel__body" id="basic-fields" data-editor-panel-body><div class="ui-editor-basic">
+<div class="ui-editor-image">{% include "components/forms/upload.html" with field=form.image %}</div>
+<div class="ui-editor-name">{% include "components/forms/field.html" with field=form.name %}</div>
+<div class="ui-form-grid ui-form-grid--dense ui-editor-attributes">
+{% include "components/forms/field.html" with field=form.sku %}
+{% include "components/forms/field.html" with field=form.barcode %}
+<div class="ui-editor-category">{% include "inventory/partials/category_field.html" %}<a class="ui-link ui-link--primary ui-inline-action" href="{% url 'inventory:category_create' %}" hx-get="{% url 'inventory:category_create' %}" hx-target="#workspace-dialog-body"><i data-lucide="plus" aria-hidden="true"></i>Create new category</a></div>
+<div class="ui-editor-description">{% include "components/forms/field.html" with field=form.description counter=True %}</div>
+</div></div></div></section>
+<section class="ui-card ui-editor-section ui-editor-panel" aria-labelledby="pricing-title" data-editor-panel data-default-expanded="false">
+{% include "components/section_heading.html" with icon="tag" title="Pricing" heading_id="pricing-title" copy="Set the cost and selling price." panel_id="pricing-fields" %}
+<div class="ui-editor-panel__body ui-form-grid ui-form-grid--dense" id="pricing-fields" data-editor-panel-body>{% include "components/forms/field.html" with field=form.selling_price prefix=currency_symbol %}{% include "components/forms/field.html" with field=form.unit_cost prefix=currency_symbol %}</div>
+</section>
+<section class="ui-card ui-editor-section ui-editor-panel" aria-labelledby="inventory-title" data-editor-panel data-default-expanded="false"{% if stock_form.errors %} data-has-errors="true"{% endif %}>
+{% include "components/section_heading.html" with icon="boxes" title="Inventory" heading_id="inventory-title" copy="Manage stock levels and inventory tracking." mobile_copy="Manage stock levels and tracking." panel_id="inventory-fields" %}
+<div class="ui-editor-panel__body" id="inventory-fields" data-editor-panel-body>
+{% include "components/forms/switch.html" with field=form.track_inventory copy="Keep track of stock levels for this product." %}
+<div class="ui-form-grid ui-form-grid--three ui-form-grid--dense" data-inventory-controls>
+{% include "components/forms/field.html" with field=stock_form.quantity help_text="Initial stock in whole units; later changes use stock movements." %}
+{% include "components/forms/field.html" with field=stock_form.minimum_quantity help_text="Low stock alert when quantity reaches this level." %}
+{% include "components/forms/field.html" with field=form.unit_of_measure %}
+{% if stock_form.single_location and not stock_form.location.errors %}<div class="ui-form-span">{{ stock_form.location.as_hidden }}<p class="ui-field-help">Opening stock location: {{ stock_form.default_location.name|default:"Main Warehouse (created automatically)" }}.</p></div>{% else %}<div class="ui-form-span">{% include "components/forms/field.html" with field=stock_form.location help_text="Opening stock is recorded at the selected location." %}</div>{% endif %}
+</div><p class="ui-field-help" data-inventory-disabled hidden>Inventory tracking is off. This product will not produce stock alerts.</p>
+</div></section>
+<section class="ui-card ui-editor-section ui-editor-options ui-editor-panel" aria-labelledby="options-title" data-editor-panel data-default-expanded="false">
+{% include "components/section_heading.html" with icon="settings" title="Product Options" heading_id="options-title" copy="Additional product settings." mobile_copy="Status and variants." panel_id="options-fields" %}
+<div class="ui-editor-panel__body ui-form-grid ui-form-grid--dense" id="options-fields" data-editor-panel-body>{% include "components/forms/field.html" with field=form.is_active %}{% include "components/forms/switch.html" with field=form.has_variants copy="Enable if this product has variations (size, color, etc.)." %}</div>
+</section>
+</div>
+<aside class="ui-card ui-editor-section ui-editor-additional ui-editor-panel" aria-labelledby="additional-title" data-editor-panel data-default-expanded="false">
+{% include "components/section_heading.html" with icon="file-text" title="Additional Information" heading_id="additional-title" copy="Custom fields specific to your business." panel_id="additional-fields" %}
+<div class="ui-editor-panel__body ui-editor-additional__body" id="additional-fields" data-editor-panel-body>
+<div class="ui-alert ui-alert--info"><i data-lucide="info" aria-hidden="true"></i><p>Configure reusable fields for all products in your workspace.{% if can_manage_fields %} <a class="ui-link ui-link--primary" href="{% url 'inventory:custom_fields' %}">Manage Custom Fields</a>{% endif %}</p></div>
+{% include "components/forms/field.html" with field=form.brand %}{% include "components/forms/field.html" with field=form.model %}
+<div id="additional-custom-fields">{% for field in form.custom_fields %}{% include "components/forms/field.html" with field=field %}{% endfor %}</div>
+{% if can_manage_fields %}<a class="ui-button ui-button--outline ui-button--full" href="{% url 'inventory:custom_field_create' %}" hx-get="{% url 'inventory:custom_field_create' %}" hx-target="#workspace-dialog-body"><i data-lucide="plus" aria-hidden="true"></i>Create Custom Field</a><a class="ui-link ui-link--primary ui-inline-action" href="{% url 'inventory:custom_fields' %}"><i data-lucide="settings" aria-hidden="true"></i>Manage Custom Fields</a>{% endif %}
+</div></aside></div>
+<footer class="ui-editor-footer">{% include "components/button.html" with href=list_url label="Cancel" %}<div class="workspace-actions">{% include "components/button.html" with type="submit" name="save_action" value="add_another" label="Save & Add Another" outline=True %}{% include "components/button.html" with type="submit" name="save_action" value="save" label="Save Product" primary=True icon="save" %}</div></footer>
+</form>
+{% include "components/dialog.html" %}
+{% endblock %}

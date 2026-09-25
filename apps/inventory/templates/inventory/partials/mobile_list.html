@@ -1,0 +1,4 @@
+<div class="ui-mobile-only ui-product-feed" id="mobile-product-feed" aria-label="Products" aria-live="polite">
+{% for product in mobile_page %}{% include "inventory/partials/mobile_card.html" %}{% empty %}{% include "components/empty_state.html" with heading="No products found" copy="Add your first product or adjust your search and filters." %}{% endfor %}
+{% include "inventory/partials/mobile_more.html" %}
+</div>

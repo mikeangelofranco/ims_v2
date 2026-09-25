@@ -1,0 +1,8 @@
+{% url 'onboarding:workspace_home' as home_url %}{% url 'inventory:product_list' as products_url %}{% url 'inventory:movement_list' as movements_url %}{% url 'inventory:report_list' as reports_url %}
+<nav class="dashboard-mobile-nav" aria-label="Mobile navigation">
+{% include "dashboard/partials/mobile_nav_item.html" with icon="house" label="Dashboard" url=home_url %}
+{% include "dashboard/partials/mobile_nav_item.html" with icon="box" label="Products" url=products_url active=catalog_nav_active %}
+{% if stock_active %}{% include "dashboard/partials/mobile_nav_item.html" with icon="arrow-left-right" label="Stock Movement" url=movements_url active=True %}{% else %}{% include "dashboard/partials/mobile_nav_item.html" with icon="arrow-left-right" label="Stock In/Out" url=movements_url %}{% endif %}
+{% include "dashboard/partials/mobile_nav_item.html" with icon="chart-no-axes-column-increasing" label="Reports" url=reports_url active=reports_active %}
+{% include "dashboard/partials/mobile_nav_item.html" with icon="settings" label="Settings" %}
+</nav>

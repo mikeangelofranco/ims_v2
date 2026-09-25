@@ -1,0 +1,7 @@
+<div class="ui-field{% if field.errors %} ui-field--invalid{% endif %}">
+<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="ui-required" aria-hidden="true">*</span>{% endif %}</label>
+<div class="ui-field-control{% if prefix %} ui-field-control--prefixed{% endif %}">{% if prefix %}<span aria-hidden="true">{{ prefix }}</span>{% endif %}{{ field }}</div>
+{% if help_text %}<p class="ui-field-help" id="{{ field.auto_id }}_help">{{ help_text }}</p>{% endif %}
+{% if counter %}<p class="ui-field-counter" data-character-count="{{ field.id_for_label }}">0/500</p>{% endif %}
+{% for error in field.errors %}<p class="ui-field-error" id="{{ field.auto_id }}_error">{{ error }}</p>{% endfor %}
+</div>

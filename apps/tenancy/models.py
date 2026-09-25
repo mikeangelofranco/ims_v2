@@ -7,6 +7,7 @@ from apps.common.models import TimeStampedModel, UUIDModel
 from .context import get_current_tenant
 from .exceptions import TenantBoundaryViolation
 from .managers import TenantManager
+from .validators import validate_timezone, validate_workspace_logo, validate_workspace_slug
 
 hostname_validator = RegexValidator(
     regex=r"^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$",
@@ -21,7 +22,15 @@ class TenantStatus(models.TextChoices):
 
 class Tenant(UUIDModel, TimeStampedModel):
     name = models.CharField(max_length=160)
-    slug = models.SlugField(max_length=80, unique=True)
+    slug = models.SlugField(max_length=80, unique=True, validators=[validate_workspace_slug])
+    logo = models.FileField(
+        upload_to="workspace-logos/%Y/%m/",
+        blank=True,
+        validators=[validate_workspace_logo],
+    )
+    timezone = models.CharField(
+        max_length=64, default="Asia/Manila", validators=[validate_timezone]
+    )
     status = models.CharField(max_length=16, choices=TenantStatus, default=TenantStatus.ACTIVE)
 
     class Meta:
@@ -104,3 +113,17 @@ class TenantOwnedModel(UUIDModel, TimeStampedModel):
             raise TenantBoundaryViolation("Cannot save data for a different tenant.")
         self.tenant = tenant
         return super().save(*args, **kwargs)
+
+
+class WorkspaceSessionGrant(TenantOwnedModel):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="workspace_session_grants",
+    )
+    token_digest = models.CharField(max_length=64, unique=True)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("-created_at",)

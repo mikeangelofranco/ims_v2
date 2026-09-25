@@ -1,0 +1,17 @@
+{% extends "components/workspace/layout.html" %}
+{% block title %}Products — {{ tenant.name }}{% endblock %}
+{% block search_form %}product-filters{% endblock %}
+{% block workspace_content %}
+<div class="ui-page-heading product-page-heading"><div><h1>Products</h1><p>Manage your product list, pricing, and stock levels.</p></div><div class="workspace-actions">
+  {% url 'inventory:product_import' as import_url %}{% url 'inventory:product_create' as create_url %}
+  <div class="ui-desktop-only">{% if can_edit %}{% include "components/button.html" with href=import_url label="Import" icon="upload" %}{% endif %}</div>
+  <a class="ui-button ui-desktop-only" data-product-export href="{% url 'inventory:product_export' %}?{{ request.GET.urlencode }}"><i data-lucide="download" aria-hidden="true"></i>Export</a>
+  {% if can_edit %}{% include "components/button.html" with href=create_url label="Add Product" icon="plus" primary=True %}{% endif %}
+</div></div>
+<section class="workspace-stats" aria-label="Product overview">
+{% include "components/stat_card.html" with icon="box" tone="blue" label="Total Products" mobile_label="Total Products" value=counts.all copy="All products in your workspace" %}
+{% include "components/stat_card.html" with icon="triangle-alert" tone="orange" label="Low Stock Items" mobile_label="Low Stock" value=counts.low copy="Needs attention" %}
+{% include "components/stat_card.html" with icon="circle-x" tone="red" label="Out of Stock Items" mobile_label="Out of Stock" value=counts.out copy="Out of stock" %}
+</section>
+{% include "inventory/partials/list_panel.html" %}
+{% endblock %}

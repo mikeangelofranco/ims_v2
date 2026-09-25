@@ -1,0 +1,11 @@
+{% if available %}
+  <p class="workspace-availability workspace-availability--available"><i data-lucide="circle-check" aria-hidden="true"></i>Available</p>
+{% elif errors %}
+  {% for error in errors %}<p class="workspace-availability workspace-availability--unavailable"><i data-lucide="circle-x" aria-hidden="true"></i>{{ error }}</p>{% endfor %}
+{% endif %}
+<div class="workspace-live-url">
+  <i data-lucide="globe-2" aria-hidden="true"></i>
+  <span>https://<b data-slug-preview>{{ slug|default:"your-workspace" }}</b>.{{ display_domain }}</span>
+  <i data-lucide="copy" aria-hidden="true"></i>
+</div>
+<p class="workspace-setting__help">This will be your unique workspace URL.</p>

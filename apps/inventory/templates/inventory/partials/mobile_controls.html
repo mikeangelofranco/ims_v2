@@ -1,0 +1,22 @@
+{% load inventory_ui %}
+<div class="ui-mobile-only">
+  <form method="get" class="ui-search ui-mobile-search" hx-get="{% url 'inventory:product_list' %}" hx-target="#product-list-panel" hx-swap="outerHTML" hx-push-url="true" role="search">
+    <input type="hidden" name="status" value="{{ status }}"><input type="hidden" name="category" value="{{ request.GET.category }}"><input type="hidden" name="location" value="{{ request.GET.location }}"><input type="hidden" name="sort" value="{{ request.GET.sort|default:'name' }}">
+    <i data-lucide="search" aria-hidden="true"></i><input type="search" name="q" id="mobile-product-search" class="ui-input" value="{{ request.GET.q }}" placeholder="Search products, SKU, or category..." aria-label="Search products on mobile">
+  </form>
+  <div class="ui-feed-controls">
+    <details class="ui-filter-panel"><summary class="ui-button ui-button--control"><i data-lucide="funnel" aria-hidden="true"></i><span>Filter{% if request.GET.category or request.GET.location or status != 'all' %}<span class="ui-filter-dot" aria-label="Filters active"></span>{% endif %}<small>Category, Status, Location...</small></span></summary>
+      <form method="get" class="ui-filter-panel__body" hx-get="{% url 'inventory:product_list' %}" hx-target="#product-list-panel" hx-swap="outerHTML" hx-push-url="true">
+      <input type="hidden" name="q" value="{{ request.GET.q }}"><input type="hidden" name="sort" value="{{ request.GET.sort|default:'name' }}">
+      <label for="mobile-category">Category</label><select class="ui-input" id="mobile-category" name="category"><option value="">All Categories</option>{% for category in categories %}<option value="{{ category.pk }}"{% if request.GET.category == category.pk|stringformat:'s' %} selected{% endif %}>{{ category.name }}</option>{% endfor %}</select>
+      <label for="mobile-status">Status</label><select class="ui-input" id="mobile-status" name="status">{% for key,label,count in tabs %}<option value="{{ key }}"{% if status == key %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+      <label for="mobile-location">Location</label><select class="ui-input" id="mobile-location" name="location"><option value="">All Locations</option>{% for location in locations %}<option value="{{ location.pk }}"{% if request.GET.location == location.pk|stringformat:'s' %} selected{% endif %}>{{ location.name }}</option>{% endfor %}</select>
+      <div class="workspace-actions">{% include "components/button.html" with type="submit" label="Apply filters" primary=True %}<a class="ui-link" href="{% product_query category=None status='all' location=None mobile_page=None page=None %}">Reset</a></div>
+      </form>
+    </details>
+    <form method="get" class="ui-sort-control" hx-get="{% url 'inventory:product_list' %}" hx-target="#product-list-panel" hx-swap="outerHTML" hx-push-url="true" hx-trigger="change, submit">
+      <input type="hidden" name="q" value="{{ request.GET.q }}"><input type="hidden" name="category" value="{{ request.GET.category }}"><input type="hidden" name="status" value="{{ status }}"><input type="hidden" name="location" value="{{ request.GET.location }}">
+      <i data-lucide="arrow-up-down" aria-hidden="true"></i><label for="mobile-sort">Sort</label><select id="mobile-sort" name="sort" class="ui-input" aria-label="Sort products">{% for value,label in sort_options %}<option value="{{ value }}"{% if selected_sort == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select><noscript>{% include "components/button.html" with type="submit" label="Sort" %}</noscript>
+    </form>
+  </div>
+</div>

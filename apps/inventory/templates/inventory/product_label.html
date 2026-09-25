@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Print label — {{ product.name }}{% endblock %}
+{% block content %}
+<main class="ui-print-label-page"><div class="ui-print-controls"><a class="ui-button" href="{% url 'inventory:product_detail' product.pk %}">Back to Product</a><button class="ui-button ui-button--primary" type="button" data-print-label><i data-lucide="printer" aria-hidden="true"></i>Print Label</button></div><article class="ui-print-label" aria-label="Product label"><strong>{{ product.name }}</strong><span>{{ product.sku }}</span>{% if product.barcode %}<span>Barcode: {{ product.barcode }}</span>{% endif %}<small>{{ tenant.name }}</small></article></main>
+{% endblock %}

@@ -1,3 +1,5 @@
+{% url 'onboarding:account' as registration_url %}
+{% url 'onboarding:sign_in' as sign_in_url %}
 <header class="site-header" x-data="mobileMenu">
   <div class="landing-container site-header__inner">
     {% include "components/logo.html" %}
@@ -9,8 +11,8 @@
       <a href="#about">About</a>
     </nav>
     <div class="header-actions">
-      <a class="login-link" href="#login">Log in</a>
-      {% include "components/primary_button.html" with button_class="header-trial" %}
+      <a class="login-link" href="{{ sign_in_url }}">Log in</a>
+      {% include "components/primary_button.html" with button_class="header-trial" href=registration_url %}
     </div>
     <button class="mobile-menu-button" type="button" aria-label="Toggle navigation" x-on:click="toggle" x-bind:aria-expanded="open">
       <i data-lucide="menu" aria-hidden="true"></i>
@@ -22,7 +24,7 @@
     <a href="#pricing">Pricing</a>
     <a href="#resources">Resources</a>
     <a href="#about">About</a>
-    <a href="#login">Log in</a>
+    <a href="{{ sign_in_url }}">Log in</a>
+    <a href="{{ registration_url }}">Start free trial</a>
   </nav>
 </header>
-

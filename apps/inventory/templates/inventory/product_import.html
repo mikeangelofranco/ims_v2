@@ -1,0 +1,6 @@
+{% extends "components/workspace/layout.html" %}
+{% block title %}Import Products — {{ tenant.name }}{% endblock %}
+{% block workspace_content %}
+<div class="ui-page-heading"><div><h1>Import Products</h1><p>Add up to 1,000 new products from a CSV file.</p></div></div>
+<form method="post" enctype="multipart/form-data" class="ui-card workspace-form">{% csrf_token %}<p>Required columns: <code>name,sku</code>. Optional: <code>description,barcode,selling_price,unit_cost,is_active</code>. Use true or false for is_active. Prices default to zero.</p><p class="ui-muted">Imports create new products without stock or categories. Existing SKUs are rejected. If any row is invalid, the entire import is rolled back.</p>{% for field in form %}{% include "components/form_field.html" with field=field %}{% endfor %}<div class="workspace-actions">{% include "components/button.html" with type="submit" label="Import Products" primary=True %}{% url 'inventory:product_list' as list_url %}{% include "components/button.html" with href=list_url label="Cancel" %}</div></form>
+{% endblock %}

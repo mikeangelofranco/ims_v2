@@ -1,0 +1,19 @@
+{% url "inventory:product_list" as products_url %}
+{% url "inventory:category_list" as categories_url %}
+{% url "inventory:movement_list" as movements_url %}
+{% url "inventory:report_list" as reports_url %}
+{% url "onboarding:workspace_home" as dashboard_url %}
+  <aside class="dashboard-sidebar" x-bind:class="open ? 'is-open' : ''" x-bind:inert="sidebarHidden" x-bind:aria-hidden="sidebarHidden">
+    <div class="dashboard-sidebar__logo">{% include "components/logo.html" %}<button type="button" aria-label="Close navigation" x-on:click="toggle"><i data-lucide="x" aria-hidden="true"></i></button></div>
+    <div class="dashboard-workspace"><span>{% if tenant.logo %}<img src="{% url 'onboarding:workspace_logo' tenant.pk %}" alt="">{% else %}{{ business.legal_name|slice:":2"|upper }}{% endif %}</span><div><strong>{{ tenant.name }}</strong><small>{{ workspace_display_url }}</small></div></div>
+    <nav class="dashboard-nav" aria-label="Main navigation">
+      {% include "dashboard/partials/nav_item.html" with icon="house" label="Dashboard" active=dashboard_active url=dashboard_url %}
+      {% include "dashboard/partials/nav_item.html" with icon="box" label="Products" active=products_active url=products_url %}
+      {% include "dashboard/partials/nav_item.html" with icon="folder" label="Categories" active=categories_active url=categories_url %}
+      {% include "dashboard/partials/nav_item.html" with icon="arrow-left-right" label="Stock Movement" active=stock_active url=movements_url %}
+      {% include "dashboard/partials/nav_item.html" with icon="chart-no-axes-column-increasing" label="Reports" active=reports_active url=reports_url %}
+      <span class="dashboard-nav__separator"></span>
+      {% include "dashboard/partials/nav_item.html" with icon="settings" label="Settings" %}
+    </nav>
+    <div class="dashboard-user"><span>{{ request.user.first_name|default:request.user.email|slice:":2"|upper }}</span><div><strong>{{ request.user.first_name|default:"Workspace owner" }}</strong><small>{{ membership.get_role_display }}</small></div>{% include "dashboard/partials/logout_form.html" with class_name="dashboard-logout-form--compact" %}</div>
+  </aside>

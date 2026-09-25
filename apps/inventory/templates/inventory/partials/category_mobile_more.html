@@ -1,0 +1,5 @@
+{% load inventory_ui %}
+<footer id="mobile-category-more" class="ui-feed-footer">
+  {% if mobile_page.has_next %}<a class="ui-button ui-button--soft ui-button--full" href="{% product_query mobile_page=mobile_page.next_page_number %}" hx-get="{% product_query mobile_page=mobile_page.next_page_number append='categories' %}" hx-target="#mobile-category-more" hx-swap="outerHTML" hx-disabled-elt="this"><i data-lucide="chevron-down" aria-hidden="true"></i>Load more categories</a>{% endif %}
+  <p>{% if not appending and mobile_page.number > 1 %}Showing {{ mobile_page.start_index }} to {{ mobile_page.end_index }}{% else %}Showing {{ mobile_page.end_index }}{% endif %} of {{ mobile_page.paginator.count }} categories</p>
+</footer>

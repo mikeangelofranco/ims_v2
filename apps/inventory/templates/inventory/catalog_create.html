@@ -1,0 +1,3 @@
+{% extends "components/workspace/layout.html" %}
+{% block title %}{{ heading }} — {{ tenant.name }}{% endblock %}
+{% block workspace_content %}<div class="ui-card workspace-form">{% include "inventory/partials/catalog_dialog.html" %}{% url 'inventory:product_create' as create_url %}{% include "components/button.html" with href=create_url label="Back to Add Product" %}</div>{% endblock %}

@@ -1,0 +1,9 @@
+{% load inventory_ui %}
+<tr>
+<td><input type="checkbox" class="ui-checkbox" data-product-select value="{{ product.pk }}" aria-label="Select {{ product.name }}"></td>
+<td><div class="ui-product"><a class="ui-product-detail-link" href="{% url 'inventory:product_detail' product.pk %}" aria-label="View {{ product.name }}">{% include "components/product_thumbnail.html" %}</a><div><a class="ui-product-detail-link" href="{% url 'inventory:product_detail' product.pk %}"><strong>{{ product.name }}</strong></a><small>{{ product.description|default:'—' }}</small></div></div></td>
+<td>{{ product.sku }}</td><td>{{ product.category.name|default:'Uncategorized' }}</td><td><span class="ui-stock ui-stock--{{ product.stock_status }}">{{ product.total_quantity }}</span></td><td>{{ product.total_minimum }}</td><td><strong class="ui-price">{{ currency_symbol }}{{ product.selling_price|floatformat:'2g' }}</strong></td>
+<td>{% include "components/badge.html" with tone=product.stock_status label=product.stock_status|stock_label %}</td>
+<td><time datetime="{{ product.updated_at|date:'c' }}">{{ product.updated_at|date:'M j, Y' }}</time><small class="ui-muted">{% if product.updated_by %}by {{ product.updated_by.get_full_name|default:product.updated_by.email }}{% else %}—{% endif %}</small></td>
+<td><div class="ui-row-actions">{% if can_edit %}{% url 'inventory:product_edit' product.pk as edit_url %}{% include "components/button.html" with href=edit_url compact=True icon="pencil" aria_label="Edit "|add:product.name %}{% include "components/product_actions.html" %}{% else %}<span class="ui-muted">Read only</span>{% endif %}</div></td>
+</tr>

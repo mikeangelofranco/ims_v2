@@ -1,0 +1,8 @@
+{% extends "components/workspace/layout.html" %}
+{% load inventory_ui %}
+{% block title %}{{ product.name }} — {{ tenant.name }}{% endblock %}
+{% block workspace_content_class %}ui-product-detail-page{% endblock %}
+{% block workspace_content %}
+{% include "inventory/partials/product_detail_mobile.html" %}
+{% include "inventory/partials/product_detail_desktop.html" %}
+{% endblock %}

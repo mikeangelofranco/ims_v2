@@ -1,0 +1,18 @@
+<ol class="registration-progress" aria-label="Registration progress" style="--registration-step: {{ current_step }}">
+  <li class="registration-progress__step {% if current_step == 1 %}is-current{% elif current_step > 1 %}is-complete{% endif %}">
+    <span class="registration-progress__icon"><i data-lucide="{% if current_step > 1 and current_step != 4 %}check{% else %}user-round{% endif %}" aria-hidden="true"></i></span>
+    <span><span class="desktop-step-label">Create Account</span><span class="mobile-step-label">Account</span></span>
+  </li>
+  <li class="registration-progress__step {% if current_step == 2 %}is-current{% elif current_step > 2 %}is-complete{% endif %}">
+    <span class="registration-progress__icon"><i data-lucide="{% if current_step > 2 and current_step != 4 %}check{% else %}building-2{% endif %}" aria-hidden="true"></i></span>
+    <span><span class="desktop-step-label">Create Workspace</span><span class="mobile-step-label">Workspace</span></span>
+  </li>
+  <li class="registration-progress__step {% if current_step == 3 %}is-current{% elif current_step > 3 %}is-complete{% endif %}">
+    <span class="registration-progress__icon"><i data-lucide="store" aria-hidden="true"></i></span>
+    <span><span class="desktop-step-label">Setup Your Business</span><span class="mobile-step-label">Business</span></span>
+  </li>
+  <li class="registration-progress__step {% if current_step == 4 %}is-current{% endif %}">
+    <span class="registration-progress__icon"><i data-lucide="{% if current_step == 4 %}check{% elif current_step > 1 %}flag{% else %}circle-check{% endif %}" aria-hidden="true"></i></span>
+    <span><span class="desktop-step-label">You're Ready</span><span class="mobile-step-label">Ready</span></span>
+  </li>
+</ol>

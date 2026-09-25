@@ -14,7 +14,7 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 DEBUG = env.bool("DEBUG", default=False)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
-ASSET_VERSION = "2026.08.05.6"
+ASSET_VERSION = "2026.09.15.1"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -26,8 +26,12 @@ INSTALLED_APPS = [
     "csp",
     "django_htmx",
     "apps.accounts",
+    "apps.businesses",
     "apps.common",
+    "apps.dashboard",
+    "apps.inventory",
     "apps.marketing",
+    "apps.onboarding",
     "apps.tenancy",
 ]
 
@@ -107,7 +111,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_DOMAIN = env("SESSION_COOKIE_DOMAIN", default=None)
 CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_DOMAIN = env("CSRF_COOKIE_DOMAIN", default=None)
+CSRF_FAILURE_VIEW = "apps.common.views.csrf_failure"
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"
 X_FRAME_OPTIONS = "DENY"
@@ -126,7 +133,28 @@ CONTENT_SECURITY_POLICY = {
     }
 }
 
-TENANCY_EXEMPT_PATHS = ("/",)
+TENANT_BASE_DOMAIN = env("TENANT_BASE_DOMAIN", default="localhost")
+WORKSPACE_DISPLAY_DOMAIN = env("WORKSPACE_DISPLAY_DOMAIN", default="plughubcore.com")
+WORKSPACE_SESSION_GRANT_TTL_SECONDS = env.int(
+    "WORKSPACE_SESSION_GRANT_TTL_SECONDS", default=60
+)
+TENANCY_PLATFORM_HOSTS = tuple(
+    host.strip().rstrip(".").lower()
+    for host in env.list("TENANCY_PLATFORM_HOSTS", default=[TENANT_BASE_DOMAIN])
+)
+TENANCY_EXEMPT_PATHS = (
+    "/",
+    "/register/",
+    "/register/workspace/",
+    "/register/workspace/check-slug/",
+    "/register/business/",
+    "/register/ready/",
+    "/launch-workspace/",
+    "/sign-in/",
+)
+TENANCY_EXEMPT_PATH_PREFIXES = ("/workspace-logo/",)
+TENANCY_TENANT_PUBLIC_PATHS = ("/sign-in/", "/app/session/")
+TENANCY_TENANT_PATH_PREFIXES = ("/app/", "/logout/", "/workspace-logo/")
 
 LOGGING = {
     "version": 1,

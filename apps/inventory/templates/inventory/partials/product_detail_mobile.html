@@ -1,0 +1,86 @@
+{% load inventory_ui %}
+<div class="ui-detail-mobile">
+  <div class="ui-mobile-detail-lead">
+    <a class="ui-link ui-mobile-detail-back" href="{% url 'inventory:product_list' %}"><i data-lucide="arrow-left" aria-hidden="true"></i>Products</a>
+    <a class="ui-button ui-button--icon ui-mobile-detail-menu-jump" href="#mobile-product-actions" aria-label="Open product actions"><i data-lucide="ellipsis-vertical" aria-hidden="true"></i></a>
+    <h1>{{ product.name }}</h1>
+    <p>{{ product.description|default:"Product details and inventory"|truncatechars:90 }}</p>
+    <div class="ui-mobile-detail-badges">{% if product.is_active %}{% include "components/badge.html" with tone="in" label="Active" %}{% else %}{% include "components/badge.html" with tone="inactive" label="Inactive" %}{% endif %}{% include "components/badge.html" with tone=product.stock_status label=product.stock_status|stock_label %}</div>
+  </div>
+
+  <section class="ui-card ui-mobile-detail-identity" aria-label="Product information">
+    <div class="ui-detail-gallery ui-mobile-detail-gallery">
+      <div class="ui-detail-gallery-main">
+        {% if product.image %}<img data-gallery-main src="{% url 'inventory:product_image' product.pk %}" alt="{{ product.name }}">
+        {% elif gallery_images %}<img data-gallery-main src="{% url 'inventory:product_gallery_image' product.pk gallery_images.0.pk %}" alt="{{ gallery_images.0.alt_text|default:product.name }}">
+        {% else %}<div class="ui-detail-image-empty"><i data-lucide="box" aria-hidden="true"></i><span>No product image</span></div>{% endif %}
+      </div>
+      {% if product.image or gallery_images %}<div class="ui-mobile-gallery-dots" aria-label="Choose product image">
+        {% if product.image %}<button type="button" class="is-active" data-gallery-thumb data-image-url="{% url 'inventory:product_image' product.pk %}" data-image-alt="{{ product.name }}" aria-label="Show primary image"></button>{% endif %}
+        {% for photo in gallery_images %}<button type="button"{% if not product.image and forloop.first %} class="is-active"{% endif %} data-gallery-thumb data-image-url="{% url 'inventory:product_gallery_image' product.pk photo.pk %}" data-image-alt="{{ photo.alt_text|default:product.name }}" aria-label="Show image {{ forloop.counter|add:1 }}"></button>{% endfor %}
+      </div>{% endif %}
+    </div>
+    <div class="ui-mobile-detail-facts">
+      <div><span>SKU</span><strong>{{ product.sku }}</strong><button type="button" class="ui-button ui-button--icon" data-copy-value="{{ product.sku }}" aria-label="Copy SKU"><i data-lucide="copy" aria-hidden="true"></i></button></div>
+      <div><span>Barcode</span><strong>{{ product.barcode|default:"—" }}</strong>{% if product.barcode %}<button type="button" class="ui-button ui-button--icon" data-copy-value="{{ product.barcode }}" aria-label="Copy barcode"><i data-lucide="copy" aria-hidden="true"></i></button>{% endif %}</div>
+      <div class="ui-mobile-detail-category"><span>Category</span>{% include "components/badge.html" with tone="info" label=product.category.name|default:"Uncategorized" %}</div>
+      <div><span>Brand</span><strong>{{ product.brand|default:"—" }}</strong></div>
+      <div><span>Model</span><strong>{{ product.model|default:"—" }}</strong></div>
+    </div>
+  </section>
+
+  <section class="ui-card ui-detail-description ui-mobile-detail-description">
+    <span class="ui-detail-label">Description</span>
+    <p class="ui-detail-description-text" data-description-text>{{ product.description|default:"No description added." }}</p>
+    {% if product.description %}<button type="button" class="ui-link ui-link--primary" data-description-toggle aria-expanded="false">Show more <i data-lucide="chevron-down" aria-hidden="true"></i></button>{% endif %}
+  </section>
+
+  <section class="ui-card ui-mobile-stock-card" aria-labelledby="mobile-stock-title">
+    <header><h2 id="mobile-stock-title"><i data-lucide="boxes" aria-hidden="true"></i>Stock &amp; Pricing</h2>{% include "components/badge.html" with tone=product.stock_status label=product.stock_status|stock_label %}</header>
+    <div class="ui-mobile-stock-grid">
+      <div class="ui-mobile-current-stock"><span>Current Stock</span><strong>{{ total_stock }} {{ product.unit_of_measure }}</strong><small>Min. Stock: {{ minimum_stock }} {{ product.unit_of_measure }}</small></div>
+      <div><span>Selling Price</span><strong>{{ currency_symbol }}{{ product.selling_price|floatformat:'2g' }}</strong></div>
+      <div><span>Cost Price</span><strong>{{ currency_symbol }}{{ product.unit_cost|floatformat:'2g' }}</strong></div>
+      <div><span>Unit of Measure</span><strong>{{ product.unit_of_measure }}</strong></div>
+      <div><span>Product Status</span><strong class="ui-mobile-status"><i aria-hidden="true"></i>{{ product.is_active|yesno:"Active,Inactive" }}</strong></div>
+    </div>
+  </section>
+
+  <div class="ui-mobile-detail-sections">
+    <details class="ui-card ui-mobile-detail-section">
+      <summary><i data-lucide="map-pin" aria-hidden="true"></i><span><strong>Inventory by Location</strong><small>{{ locations|length }} location{{ locations|length|pluralize }} · {{ total_stock }} {{ product.unit_of_measure }} total</small></span><i data-lucide="chevron-right" aria-hidden="true"></i></summary>
+      <div class="ui-mobile-section-body"><table class="ui-detail-table"><thead><tr><th>Location</th><th>Stock</th><th>% of Total</th></tr></thead><tbody>{% for row in locations %}<tr><td>{{ row.name }}</td><td>{{ row.quantity }} {{ product.unit_of_measure }}</td><td>{{ row.share|floatformat:1 }}%</td></tr>{% empty %}<tr><td colspan="3">No stock locations recorded.</td></tr>{% endfor %}</tbody></table></div>
+    </details>
+    <details class="ui-card ui-mobile-detail-section">
+      <summary><i data-lucide="arrow-left-right" aria-hidden="true"></i><span><strong>Recent Stock Movement</strong><small>{% if movements %}Latest: {{ movements.0.created_at|date:'M j, Y' }} ({{ movements.0.get_movement_type_display }} {{ movements.0.quantity_delta|stringformat:'+d' }}){% else %}No stock movements yet{% endif %}</small></span><i data-lucide="chevron-right" aria-hidden="true"></i></summary>
+      <div class="ui-mobile-section-body"><table class="ui-detail-table"><thead><tr><th>Date</th><th>Type</th><th>Qty</th></tr></thead><tbody>{% for movement in movements %}<tr><td>{{ movement.created_at|date:'M j, Y' }}</td><td>{{ movement.get_movement_type_display }}</td><td>{{ movement.quantity_delta|stringformat:'+d' }}</td></tr>{% empty %}<tr><td colspan="3">No stock movements recorded.</td></tr>{% endfor %}</tbody></table></div>
+    </details>
+    <details class="ui-card ui-mobile-detail-section ui-mobile-detail-section--quick"{% if active_context == 'mobile' and active_kind %} open{% endif %}>
+      <summary><i data-lucide="zap" aria-hidden="true"></i><span><strong>Quick Actions</strong><small>{% if can_edit and product.track_inventory %}Receive, Adjust, Transfer{% elif product.track_inventory %}View only access{% else %}Inventory tracking disabled{% endif %}</small></span><i data-lucide="chevron-right" aria-hidden="true"></i></summary>
+      <div class="ui-mobile-section-body">{% if can_edit and product.track_inventory %}{% for action in mobile_stock_actions %}<details class="ui-detail-action"{% if active_context == 'mobile' and active_kind == action.kind %} open{% endif %}><summary><span><i data-lucide="{{ action.icon }}" aria-hidden="true"></i></span><span><strong>{{ action.title }}</strong><small>{{ action.copy }}</small></span><i data-lucide="chevron-right" aria-hidden="true"></i></summary><form method="post" action="{% url 'inventory:product_stock_action' product.pk action.kind %}">{% csrf_token %}<input type="hidden" name="form_context" value="mobile">{% include "components/form_errors.html" with form=action.form %}{% for field in action.form %}{% include "components/forms/field.html" with field=field %}{% endfor %}<button type="submit" class="ui-button ui-button--primary">{{ action.title }}</button></form></details>{% endfor %}{% else %}<p class="ui-muted">Stock changes are unavailable for this product.</p>{% endif %}</div>
+    </details>
+    <details class="ui-card ui-mobile-detail-section">
+      <summary><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i><span><strong>30-Day Stock Summary</strong><small>Received {{ received_30d }} · Issued {{ issued_30d }} · Adjustments {{ adjusted_30d|stringformat:'+d' }}</small></span><i data-lucide="chevron-right" aria-hidden="true"></i></summary>
+      <div class="ui-mobile-section-body ui-detail-summary"><div><span>Received</span><strong>{{ received_30d }} {{ product.unit_of_measure }}</strong></div><div><span>Issued</span><strong>{{ issued_30d }} {{ product.unit_of_measure }}</strong></div><div><span>Adjustments</span><strong>{{ adjusted_30d|stringformat:'+d' }} {{ product.unit_of_measure }}</strong></div></div>
+    </details>
+    <details class="ui-card ui-mobile-detail-section" id="mobile-product-activity">
+      <summary><i data-lucide="history" aria-hidden="true"></i><span><strong>Recent Activity</strong><small>{% if activity_events %}Latest: {{ activity_events.0.created_at|date:'M j, Y' }}{% else %}No recorded activity yet{% endif %}</small></span><i data-lucide="chevron-right" aria-hidden="true"></i></summary>
+      <div class="ui-mobile-section-body"><table class="ui-detail-table"><thead><tr><th>Date</th><th>User</th><th>Activity</th></tr></thead><tbody>{% for event in activity_events %}<tr><td>{{ event.created_at|date:'M j, Y' }}</td><td>{% if event.actor %}{{ event.actor.get_full_name|default:event.actor.email }}{% else %}System{% endif %}</td><td>{{ event.description }}</td></tr>{% empty %}<tr><td colspan="3">No recorded activity yet.</td></tr>{% endfor %}</tbody></table></div>
+    </details>
+    <details class="ui-card ui-mobile-detail-section">
+      <summary><i data-lucide="info" aria-hidden="true"></i><span><strong>Additional Information</strong><small>{{ custom_values|length }} additional field{{ custom_values|length|pluralize }}</small></span><i data-lucide="chevron-right" aria-hidden="true"></i></summary>
+      <div class="ui-mobile-section-body"><dl>{% for value in custom_values %}<div><dt>{{ value.field.name }}</dt><dd>{{ value.value|default:"—" }}</dd></div>{% empty %}<div><dt>Custom fields</dt><dd>No additional information added.</dd></div>{% endfor %}</dl></div>
+    </details>
+  </div>
+
+  <div class="ui-mobile-product-actions" id="mobile-product-actions">
+    {% if can_edit %}<a class="ui-button ui-button--primary" href="{% url 'inventory:product_edit' product.pk %}"><i data-lucide="pencil" aria-hidden="true"></i>Edit</a>{% endif %}
+    <details class="ui-dropdown ui-mobile-more"><summary class="ui-button"><i data-lucide="ellipsis-vertical" aria-hidden="true"></i>More<i data-lucide="chevron-down" aria-hidden="true"></i></summary><div>
+      {% if can_edit %}<form method="post" action="{% url 'inventory:product_duplicate' product.pk %}">{% csrf_token %}<button type="submit"><i data-lucide="copy" aria-hidden="true"></i>Duplicate Product</button></form>{% endif %}
+      <a href="{% url 'inventory:product_label' product.pk %}"><i data-lucide="printer" aria-hidden="true"></i>Print Label</a>
+      <a href="{% url 'inventory:product_detail' product.pk %}?activity=all#mobile-product-activity"><i data-lucide="history" aria-hidden="true"></i>View Activity</a>
+      {% if can_edit %}<form method="post" action="{% url 'inventory:product_archive' product.pk %}">{% csrf_token %}<button type="submit"><i data-lucide="archive" aria-hidden="true"></i>{% if product.is_active %}Archive Product{% else %}Reactivate Product{% endif %}</button></form>{% endif %}
+    </div></details>
+  </div>
+  <p class="sr-only" aria-live="polite" data-copy-status></p>
+</div>

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block body_class %}dashboard-page{% endblock %}
+{% block content %}
+<div class="app-dashboard-shell" x-data="mobileMenu">
+  <button class="dashboard-overlay" type="button" aria-label="Close navigation" x-on:click="toggle" x-show="open" x-cloak></button>
+  {% include "components/workspace/sidebar.html" %}
+  <main class="workspace-main {% block workspace_main_class %}{% endblock %}">
+    {% include "components/workspace/mobile_header.html" %}
+    <header class="workspace-topbar">
+      <button type="button" class="ui-button ui-button--icon workspace-menu-toggle" aria-label="Open navigation" x-on:click="toggle"><i data-lucide="menu" aria-hidden="true"></i></button>
+      <form action="{% url 'inventory:product_list' %}" method="get" class="ui-search" role="search">
+        <i data-lucide="search" aria-hidden="true"></i><input class="ui-input" id="product-search" type="search" name="q" value="{{ request.GET.q }}" placeholder="{% block search_placeholder %}Search products, SKU, barcode, or category...{% endblock %}" aria-label="Search products" form="{% block search_form %}workspace-search{% endblock %}"><kbd>⌘ K</kbd>
+      </form>
+      <form id="workspace-search" action="{% url 'inventory:product_list' %}" method="get"></form>
+      <nav aria-label="Account navigation"><a class="ui-link" href="mailto:support@coreflow.app"><i data-lucide="circle-help" aria-hidden="true"></i> Need help?</a><details class="dashboard-account-menu"><summary><b>{{ request.user.first_name|default:request.user.email|slice:':2'|upper }}</b><span>{{ request.user.get_full_name|default:request.user.email }}</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary><div>{% include "dashboard/partials/logout_form.html" %}</div></details></nav>
+    </header>
+    <div class="workspace-content {% block workspace_content_class %}{% endblock %}">
+      {% for message in messages %}<div class="ui-alert" role="status">{{ message }}</div>{% endfor %}
+      {% block workspace_content %}{% endblock %}
+    </div>
+  </main>
+  {% include "components/workspace/mobile_nav.html" %}
+</div>
+{% endblock %}

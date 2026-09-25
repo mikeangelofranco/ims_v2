@@ -1,0 +1,1 @@
+<a class="dashboard-mobile-nav__item{% if active %} is-active{% endif %}" href="{% if url %}{{ url }}{% elif active %}{% url 'onboarding:workspace_home' %}{% else %}#{% endif %}"{% if active %} aria-current="page"{% endif %}{% if not active and not url %} aria-disabled="true"{% endif %}><i data-lucide="{{ icon }}" aria-hidden="true"></i><span>{{ label }}</span></a>

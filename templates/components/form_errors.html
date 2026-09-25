@@ -1,0 +1,6 @@
+{% if form.non_field_errors or notice %}
+  <div class="form-alert" role="alert">
+    <i data-lucide="triangle-alert" aria-hidden="true"></i>
+    <div>{% if notice %}<p>{{ notice }}</p>{% endif %}{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+  </div>
+{% endif %}

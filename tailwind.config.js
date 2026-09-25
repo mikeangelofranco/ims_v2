@@ -6,6 +6,11 @@ module.exports = {
     "./apps/**/*.py",
     "./static/src/**/*.js",
   ],
+  safelist: [
+    "dashboard-stat--blue", "dashboard-stat--orange", "dashboard-stat--red",
+    "dashboard-stat--green", "ui-badge--in", "ui-badge--low", "ui-badge--out",
+    "ui-badge--inactive", "ui-stock--in", "ui-stock--low", "ui-stock--out",
+  ],
   theme: {
     extend: {
       colors: {

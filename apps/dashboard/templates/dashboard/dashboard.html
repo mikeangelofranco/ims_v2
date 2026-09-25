@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ tenant.name }}{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
+{% block content %}
+<div class="app-dashboard-shell" x-data="mobileMenu">
+  <button class="dashboard-overlay" type="button" aria-label="Close navigation" x-on:click="toggle" x-show="open" x-cloak></button>
+  {% include "components/workspace/sidebar.html" with dashboard_active=True %}
+
+  <main class="dashboard-main">
+    <header class="dashboard-mobile-header">
+      <button type="button" aria-label="Open navigation" x-on:click="toggle" x-bind:aria-expanded="open"><i data-lucide="menu" aria-hidden="true"></i></button>
+      {% include "components/logo.html" %}
+      <div><a class="ui-button ui-button--icon" href="{% url 'inventory:product_list' %}" aria-label="Search products"><i data-lucide="search" aria-hidden="true"></i></a><button type="button" aria-label="Filter dashboard"><i data-lucide="funnel" aria-hidden="true"></i></button><b>{{ request.user.first_name|default:request.user.email|slice:":2"|upper }}</b></div>
+    </header>
+    <form id="dashboard-product-search" action="{% url 'inventory:product_list' %}" method="get"></form><div class="dashboard-topbar"><div><h1>Dashboard</h1><p>Overview of your inventory at a glance.</p></div><label><i data-lucide="search" aria-hidden="true"></i><input type="search" name="q" form="dashboard-product-search" placeholder="Search products, SKU, barcode..." aria-label="Search products"><kbd>⌘ K</kbd></label><nav><a href="mailto:support@coreflow.app"><i data-lucide="circle-help" aria-hidden="true"></i> Need help? <i data-lucide="chevron-down" aria-hidden="true"></i></a><details class="dashboard-account-menu"><summary><b>{{ request.user.first_name|default:request.user.email|slice:":2"|upper }}</b><span>{{ request.user.first_name|default:"Workspace owner" }}</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary><div>{% include "dashboard/partials/logout_form.html" %}</div></details></nav></div>
+    <h1 class="app-dashboard-title">Dashboard</h1>
+
+    <section class="dashboard-stats" aria-label="Inventory overview">
+      {% include "dashboard/partials/stat_card.html" with icon="box" tone="blue" label="Total Products" mobile_label="Products" value=snapshot.total_products copy="All products in inventory" %}
+      {% include "dashboard/partials/stat_card.html" with icon="triangle-alert" tone="orange" label="Low Stock Items" mobile_label="Low Stock" value=snapshot.low_stock_count copy="Items need attention" %}
+      {% include "dashboard/partials/stat_card.html" with icon="circle-x" tone="red" label="Out of Stock Items" mobile_label="Out of Stock" value=snapshot.out_of_stock_count copy="Out of stock" %}
+      {% include "dashboard/partials/stat_card.html" with icon="wallet-cards" tone="green" label="Inventory Value" mobile_label="Inventory Value" value=inventory_value mobile_value=inventory_value_compact copy="Total inventory value" %}
+    </section>
+
+    <div class="dashboard-grid">
+      <section class="inventory-status dashboard-card">
+        <div class="dashboard-card__heading"><div><h2>Inventory Status</h2><p>Tracked inventory by stock status</p></div><button type="button">Location: All <i data-lucide="chevron-down" aria-hidden="true"></i></button></div>
+        <div class="inventory-status__content">
+          <div class="inventory-donut{% if not snapshot.tracked_product_count %} is-empty{% endif %}" style="--in-stock:{{ snapshot.in_stock_percent }};--low-stock:{{ snapshot.low_stock_percent }}"><span><strong>{{ snapshot.tracked_product_count }}</strong>Total Items</span></div>
+          <div class="inventory-legend"><p><i class="status-dot status-dot--green"></i><span>In Stock<strong>{{ snapshot.in_stock_count }} <small>items ({{ snapshot.in_stock_percent }}%)</small></strong></span></p><p><i class="status-dot status-dot--yellow"></i><span>Low Stock<strong>{{ snapshot.low_stock_count }} <small>items ({{ snapshot.low_stock_percent }}%)</small></strong></span></p><p><i class="status-dot status-dot--red"></i><span>Out of Stock<strong>{{ snapshot.out_of_stock_count }} <small>items ({{ snapshot.out_of_stock_percent }}%)</small></strong></span></p></div>
+          <div class="stock-health"><span><i data-lucide="shield-check" aria-hidden="true"></i> Stock Health</span><strong>{{ snapshot.stock_health }}% <em>{% if snapshot.stock_health >= 80 %}Healthy{% elif snapshot.stock_health >= 50 %}Fair{% else %}Needs attention{% endif %}</em></strong><p>{% if snapshot.total_products %}Your inventory status is based on current stock levels.{% else %}Add products to begin tracking stock health.{% endif %}</p></div>
+        </div>
+      </section>
+
+      {% url 'inventory:product_create' as product_create_url %}
+      {% url 'inventory:product_list' as product_list_url %}
+      {% url 'inventory:movement_list' as movement_list_url %}
+      {% url 'inventory:report_list' as report_list_url %}
+      <section class="quick-actions dashboard-card"><h2><i data-lucide="zap" aria-hidden="true"></i> Quick Actions</h2><div>{% include "dashboard/partials/action.html" with icon="package-plus" tone="blue" title="Add Product" copy="Add a new product to inventory" url=product_create_url %}{% include "dashboard/partials/action.html" with icon="package-open" tone="green" title="Receive Stock" copy="Record incoming stock" url=movement_list_url|add:'?action=receive' %}{% include "dashboard/partials/action.html" with icon="arrow-left-right" tone="orange" title="Stock Adjustment" copy="Adjust stock quantity" url=movement_list_url|add:'?action=adjust' %}</div></section>
+
+      <section class="low-stock dashboard-card{% if not snapshot.low_stock_items %} is-empty{% endif %}">
+        <div class="dashboard-section-title"><h2><i data-lucide="triangle-alert" aria-hidden="true"></i> Low Stock Items</h2><a href="{% url 'inventory:product_list' %}?status=low">View all</a></div>
+        {% if snapshot.low_stock_items %}<div class="low-stock-table"><div class="low-stock-table__head"><span>Product</span><span>SKU</span><span>Current Stock</span><span>Min. Stock</span><span>Location</span><span>Action</span></div>{% for stock in snapshot.low_stock_items %}{% include "dashboard/partials/low_stock_row.html" with stock=stock %}{% endfor %}<p>Showing {{ snapshot.low_stock_items|length }} of {{ snapshot.low_stock_count }} low stock items</p></div>{% else %}<div class="dashboard-empty"><i data-lucide="package-check" aria-hidden="true"></i><strong>No low-stock items</strong><span>Your inventory alerts will appear here.</span></div>{% endif %}
+      </section>
+
+      <section class="recent-activity dashboard-card{% if not snapshot.recent_movements %} is-empty{% endif %}"><div class="dashboard-section-title"><h2>Recent Activity</h2><a href="{{ movement_list_url }}">View all</a></div>{% if snapshot.recent_movements %}<div>{% for movement in snapshot.recent_movements %}{% include "dashboard/partials/activity.html" with movement=movement %}{% endfor %}</div>{% else %}<div class="dashboard-empty"><i data-lucide="history" aria-hidden="true"></i><strong>No inventory activity yet</strong><span>Receipts, issues, and adjustments will appear here.</span></div>{% endif %}</section>
+    </div>
+  </main>
+
+  <nav class="dashboard-mobile-nav" aria-label="Mobile navigation">{% include "dashboard/partials/mobile_nav_item.html" with icon="house" label="Dashboard" active=True %}{% include "dashboard/partials/mobile_nav_item.html" with icon="box" label="Products" url=product_list_url %}{% include "dashboard/partials/mobile_nav_item.html" with icon="arrow-left-right" label="Stock In/Out" url=movement_list_url %}{% include "dashboard/partials/mobile_nav_item.html" with icon="chart-no-axes-column-increasing" label="Reports" url=report_list_url %}{% include "dashboard/partials/mobile_nav_item.html" with icon="settings" label="Settings" %}</nav>
+</div>
+{% endblock %}

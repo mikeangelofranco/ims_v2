@@ -1,0 +1,64 @@
+{% load inventory_ui %}
+<section class="ui-mobile-only movement-mobile" aria-label="Stock movement">
+  <header class="movement-mobile__heading">
+    <h1>Stock Movement</h1>
+    <p>Track all inventory changes across your locations.</p>
+  </header>
+
+  <details class="movement-mobile__period">
+    <summary><i data-lucide="calendar-days" aria-hidden="true"></i><span><strong>{{ period.start|date:'M j, Y' }} – {{ period.end|date:'M j, Y' }}</strong><small>Current period</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+    <form method="get">
+      <label>Start date<input class="ui-input" type="date" name="date_from" value="{{ period.start|date:'Y-m-d' }}"></label>
+      <label>End date<input class="ui-input" type="date" name="date_to" value="{{ period.end|date:'Y-m-d' }}"></label>
+      <button class="ui-button ui-button--primary" type="submit">Apply period</button>
+    </form>
+  </details>
+
+  {% if can_edit %}<nav class="movement-mobile__actions" aria-label="Stock actions">
+    <a class="ui-button movement-action--receive" href="{% movement_query action='receive' %}"><i data-lucide="plus" aria-hidden="true"></i>Receive Stock</a>
+    <a class="ui-button movement-action--adjust" href="{% movement_query action='adjust' %}"><i data-lucide="package-open" aria-hidden="true"></i>Adjust Stock</a>
+    <a class="ui-button movement-action--transfer" href="{% movement_query action='transfer' %}"><i data-lucide="arrow-left-right" aria-hidden="true"></i>Transfer Stock</a>
+  </nav>{% endif %}
+
+  <section class="movement-mobile__stats" aria-label="Movement totals">
+    <article class="movement-stat movement-stat--received"><span><i data-lucide="arrow-up" aria-hidden="true"></i></span><div><small>Received</small><strong>{{ summary.receipt.quantity|default:0 }} pcs</strong><p><i data-lucide="box" aria-hidden="true"></i>{{ summary.receipt.transactions }} transactions</p></div></article>
+    <article class="movement-stat movement-stat--issued"><span><i data-lucide="arrow-down" aria-hidden="true"></i></span><div><small>Issued</small><strong>{{ summary.issue.quantity|default:0 }} pcs</strong><p><i data-lucide="box" aria-hidden="true"></i>{{ summary.issue.transactions }} transactions</p></div></article>
+    <article class="movement-stat movement-stat--adjusted"><span><i data-lucide="arrow-left-right" aria-hidden="true"></i></span><div><small>Adjustments</small><strong>{{ summary.adjustment.quantity|default:0 }} pcs</strong><p><i data-lucide="box" aria-hidden="true"></i>{{ summary.adjustment.transactions }} transactions</p></div></article>
+    <article class="movement-stat movement-stat--transferred"><span><i data-lucide="arrow-left-right" aria-hidden="true"></i></span><div><small>Transfers</small><strong>{{ summary.transfer.quantity|default:0 }} pcs</strong><p><i data-lucide="box" aria-hidden="true"></i>{{ summary.transfer.transactions }} transactions</p></div></article>
+  </section>
+
+  <nav class="movement-mobile__tabs" aria-label="Movement type">
+    <a class="{% if selected_type == 'all' %}is-active{% endif %}" href="{% movement_query type='all' page=None %}"><span>All</span><small>{{ summary.all.quantity }}</small></a>
+    <a class="{% if selected_type == 'receipt' %}is-active{% endif %}" href="{% movement_query type='receipt' page=None %}"><span>Received</span><small>{{ summary.receipt.quantity }}</small></a>
+    <a class="{% if selected_type == 'issue' %}is-active{% endif %}" href="{% movement_query type='issue' page=None %}"><span>Issued</span><small>{{ summary.issue.quantity }}</small></a>
+    <a class="{% if selected_type == 'adjustment' %}is-active{% endif %}" href="{% movement_query type='adjustment' page=None %}"><span>Adjustments</span><small>{{ summary.adjustment.quantity }}</small></a>
+    <a class="{% if selected_type == 'transfer' %}is-active{% endif %}" href="{% movement_query type='transfer' page=None %}"><span>Transfers</span><small>{{ summary.transfer.quantity }}</small></a>
+  </nav>
+
+  <div class="movement-mobile__controls">
+    <form method="get" class="movement-mobile__search">
+      <input type="hidden" name="date_from" value="{{ period.start|date:'Y-m-d' }}"><input type="hidden" name="date_to" value="{{ period.end|date:'Y-m-d' }}"><input type="hidden" name="type" value="{{ selected_type }}">
+      <label><i data-lucide="search" aria-hidden="true"></i><span class="sr-only">Search movements</span><input class="ui-input" type="search" name="q" value="{{ request.GET.q }}" placeholder="Search product, SKU, or reference..."></label>
+    </form>
+    <details class="movement-mobile__filters">
+      <summary class="ui-button"><i data-lucide="funnel" aria-hidden="true"></i>Filters{% if active_filter_count %}<b>{{ active_filter_count }}</b>{% endif %}</summary>
+      <form method="get">
+        <input type="hidden" name="date_from" value="{{ period.start|date:'Y-m-d' }}"><input type="hidden" name="date_to" value="{{ period.end|date:'Y-m-d' }}"><input type="hidden" name="q" value="{{ request.GET.q }}"><input type="hidden" name="type" value="{{ selected_type }}">
+        <label>Location<select class="ui-input" name="location"><option value="">All Locations</option>{% for location in locations %}<option value="{{ location.pk }}"{% if request.GET.location == location.pk|stringformat:'s' %} selected{% endif %}>{{ location.name }}</option>{% endfor %}</select></label>
+        <label>User<select class="ui-input" name="user"><option value="">All Users</option>{% for membership in movement_users %}<option value="{{ membership.user_id }}"{% if request.GET.user == membership.user_id|stringformat:'s' %} selected{% endif %}>{{ membership.user.get_full_name|default:membership.user.email }}</option>{% endfor %}</select></label>
+        <div><a class="ui-button" href="{% url 'inventory:movement_list' %}">Clear</a><button class="ui-button ui-button--primary" type="submit">Apply filters</button></div>
+      </form>
+    </details>
+  </div>
+
+  <div class="movement-mobile__feed">
+    {% for movement in page_obj %}<article class="movement-mobile__card">
+      <a class="ui-thumbnail" href="{% url 'inventory:product_detail' movement.product_id %}" aria-label="View {{ movement.product.name }}">{% if movement.product.image %}<img src="{% url 'inventory:product_image' movement.product_id %}" alt="">{% else %}<i data-lucide="box" aria-hidden="true"></i>{% endif %}</a>
+      <div class="movement-mobile__product"><a href="{% url 'inventory:product_detail' movement.product_id %}">{{ movement.product.name }}</a><small>{{ movement.product.sku }}{% if movement.product.category %} · {{ movement.product.category.name }}{% endif %}</small><small>{{ movement.location.name }}{% if movement.counterparty_location %} <i data-lucide="arrow-right" aria-hidden="true"></i> {{ movement.counterparty_location.name }}{% endif %}</small></div>
+      <span class="movement-type movement-type--{{ movement.movement_type }}">{{ movement.get_movement_type_display|cut:' stock' }}</span>
+      <div class="movement-mobile__value"><strong class="movement-quantity{% if movement.movement_type != 'transfer' %}{% if movement.quantity_delta > 0 %} is-positive{% else %} is-negative{% endif %}{% endif %}">{% if movement.movement_type == 'transfer' %}{{ movement.quantity_delta|abs_value }}{% else %}{% if movement.quantity_delta > 0 %}+{% endif %}{{ movement.quantity_delta }}{% endif %} {{ movement.product.unit_of_measure }}</strong><small>{{ movement.created_at|date:'M j, Y' }}</small><small>{{ movement.created_at|date:'g:i A' }}</small></div>
+      <a class="ui-button ui-button--icon" href="{% url 'inventory:product_detail' movement.product_id %}" aria-label="View {{ movement.product.name }}"><i data-lucide="ellipsis-vertical" aria-hidden="true"></i></a>
+    </article>{% empty %}<div class="movement-mobile__empty">{% include "components/empty_state.html" with heading="No movements found" copy="Record a receipt, adjustment, or transfer, or change the selected filters." %}</div>{% endfor %}
+  </div>
+  {% if page_obj.paginator.count %}<p class="movement-mobile__count">Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} movements</p>{% endif %}
+</section>
